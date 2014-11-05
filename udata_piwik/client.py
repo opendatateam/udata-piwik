@@ -4,6 +4,8 @@ from __future__ import unicode_literals
 import logging
 import requests
 
+from datetime import date
+
 from flask import current_app
 
 log = logging.getLogger(__name__)
@@ -12,7 +14,7 @@ log = logging.getLogger(__name__)
 class PiwikClient(object):
     @property
     def base_url(self):
-        return 'http://{0}'.format(current_app.config['PIWIK_URL'])
+        return 'http://{0}/index.php'.format(current_app.config['PIWIK_URL'])
 
     def params(self, method, **kwargs):
         data = {
@@ -22,6 +24,11 @@ class PiwikClient(object):
             'format': kwargs.pop('format', 'json'),
             'token_auth': kwargs.get('token_auth', 'anonymous')
         }
+        if 'date' in kwargs:
+            dt = kwargs.pop('date')
+            if isinstance(dt, date):
+                dt = dt.isoformat()
+            kwargs['date'] = dt
         data.update(kwargs)
         return data
 

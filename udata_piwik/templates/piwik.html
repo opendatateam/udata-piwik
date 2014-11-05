@@ -2,9 +2,9 @@
 <!-- Piwik -->
 <script type="text/javascript">
   var _paq = _paq || [];
-  {% if error and error.code %}
-  _paq.push(['setDocumentTitle', '{{error.code}}/URL = ' +  encodeURIComponent(document.location.pathname+document.location.search) + '/From = ' + encodeURIComponent(document.referrer)]);
-  {% endif %}
+  {% if g.error and g.error.code -%}
+  _paq.push(['setDocumentTitle', '{{g.error.code}}/URL = ' +  encodeURIComponent(document.location.pathname+document.location.search) + '/From = ' + encodeURIComponent(document.referrer)]);
+  {%- endif %}
   _paq.push(['trackPageView']);
   _paq.push(['enableLinkTracking']);
   (function() {
