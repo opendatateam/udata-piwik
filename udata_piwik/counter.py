@@ -46,6 +46,8 @@ def route_from(url, method=None):
         raise RouteNotFound
 
     try:
+        url_adapter.path_info = url_adapter.path_info or parsed_url.path
+        url_adapter.query_args = url_adapter.query_args or parsed_url.decode_query()
         return url_adapter.match(parsed_url.path, method)
     except RequestRedirect as re:
         return route_from(re.new_url, method)
