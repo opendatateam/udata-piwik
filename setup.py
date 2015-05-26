@@ -43,7 +43,7 @@ tests_require = []
 
 setup(
     name='udata-piwik',
-    version='0.1',
+    version='0.1.0.dev',
     description='Piwik support for uData',
     long_description=long_description,
     url='https://github.com/etalab/udata-piwik',
