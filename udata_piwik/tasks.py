@@ -4,8 +4,10 @@ from __future__ import unicode_literals
 import logging
 
 from datetime import date, timedelta
-from udata.tasks import job
+from udata.tasks import connect, job
+from udata.api.signals import on_api_call
 
+import udata_piwik
 from .counter import counter
 
 
@@ -30,3 +32,10 @@ def piwik_yesterday_metrics(self):
     self.log.info('Bump Piwik metrics for {day}'.format(day=day))
 
     counter.count_for(day)
+
+
+@connect(on_api_call)
+def piwik_track_url(url, **params):
+    '''Track a URL into Piwik.'''
+    log.debug('Sending to piwik: {url}'.format(url=url))
+    udata_piwik.track(url, **params)
