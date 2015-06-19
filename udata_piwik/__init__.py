@@ -4,8 +4,6 @@ from __future__ import unicode_literals
 from flask import render_template, Blueprint
 
 from udata.frontend import footer_snippet
-from client import analyze, track  # NOQA: shortcuts
-
 
 blueprint = Blueprint('piwik', __name__, template_folder='templates')
 

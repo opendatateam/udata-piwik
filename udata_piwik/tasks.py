@@ -12,7 +12,7 @@ from udata.core.dataset.signals import on_dataset_published
 from udata.core.reuse.signals import on_reuse_published
 from udata.core.followers.signals import on_new_follow
 
-import udata_piwik
+from .client import track
 from .counter import counter
 
 
@@ -43,7 +43,7 @@ def piwik_yesterday_metrics(self):
 def piwik_track_api(url, **params):
     '''Track an API request into Piwik.'''
     log.debug('Sending to piwik: {url}'.format(url=url))
-    udata_piwik.track(url, **params)
+    track(url, **params)
 
 
 @connect(on_dataset_published)
@@ -55,7 +55,7 @@ def piwik_track_dataset_published(url, **params):
         params.update({
             'idgoal': goals['NEW_DATASET'],
         })
-    udata_piwik.track(url, **params)
+    track(url, **params)
 
 
 @connect(on_reuse_published)
@@ -67,7 +67,7 @@ def piwik_track_reuse_published(url, **params):
         params.update({
             'idgoal': goals['NEW_REUSE'],
         })
-    udata_piwik.track(url, **params)
+    track(url, **params)
 
 
 @connect(on_new_follow)
@@ -79,4 +79,4 @@ def piwik_track_new_follow(url, **params):
         params.update({
             'idgoal': goals['NEW_FOLLOW'],
         })
-    udata_piwik.track(url, **params)
+    track(url, **params)

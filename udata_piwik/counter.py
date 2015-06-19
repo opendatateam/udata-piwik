@@ -15,7 +15,7 @@ from udata.core.metrics.models import Metrics
 from udata.models import User, Organization, Reuse, Dataset, db
 from udata.utils import hash_url, get_by
 
-import udata_piwik
+from .client import analyze
 from .metrics import DatasetViews, ResourceViews, ReuseViews, OrganizationViews, UserViews
 from .metrics import OrgDatasetsViews, OrgResourcesDownloads, OrgReusesViews
 from .metrics import aggregate_datasets_daily, aggregate_reuses_daily
@@ -121,7 +121,7 @@ class Counter(object):
             'date': day,
             'expanded': 1
         }
-        for row in udata_piwik.analyze('Actions.getPageUrls', **params):
+        for row in analyze('Actions.getPageUrls', **params):
             self.handle_views(row, day)
 
     def count_downloads(self, day):
@@ -130,9 +130,9 @@ class Counter(object):
             'date': day,
             'expanded': 1
         }
-        for row in udata_piwik.analyze('Actions.getDownloads', **params):
+        for row in analyze('Actions.getDownloads', **params):
             self.handle_downloads(row, day)
-        for row in udata_piwik.analyze('Actions.getOutlinks', **params):
+        for row in analyze('Actions.getOutlinks', **params):
             self.handle_downloads(row, day)
 
     def handle_views(self, row, day):
