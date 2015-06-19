@@ -10,6 +10,7 @@ from udata.tasks import connect, job
 from udata.api.signals import on_api_call
 from udata.core.dataset.signals import on_dataset_published
 from udata.core.reuse.signals import on_reuse_published
+from udata.core.followers.signals import on_new_follow
 
 import udata_piwik
 from .counter import counter
@@ -52,7 +53,7 @@ def piwik_track_dataset_published(url, **params):
     goals = current_app.config.get('PIWIK_GOALS')
     if goals:
         params.update({
-            'idgoal': goals['PUBLISH_DATASET'],
+            'idgoal': goals['NEW_DATASET'],
         })
     udata_piwik.track(url, **params)
 
@@ -64,6 +65,18 @@ def piwik_track_reuse_published(url, **params):
     goals = current_app.config.get('PIWIK_GOALS')
     if goals:
         params.update({
-            'idgoal': goals['PUBLISH_REUSE'],
+            'idgoal': goals['NEW_REUSE'],
+        })
+    udata_piwik.track(url, **params)
+
+
+@connect(on_new_follow)
+def piwik_track_new_follow(url, **params):
+    '''Track a new follow into Piwik.'''
+    log.debug('Sending to piwik: {url}'.format(url=url))
+    goals = current_app.config.get('PIWIK_GOALS')
+    if goals:
+        params.update({
+            'idgoal': goals['NEW_FOLLOW'],
         })
     udata_piwik.track(url, **params)
