@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from flask import g, render_template, Blueprint
+from flask import render_template, Blueprint
 
 from udata.frontend import footer_snippet
 

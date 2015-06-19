@@ -15,7 +15,7 @@ from udata.core.metrics.models import Metrics
 from udata.models import User, Organization, Reuse, Dataset, db
 from udata.utils import hash_url, get_by
 
-from .client import PiwikClient
+from .client import analyze
 from .metrics import DatasetViews, ResourceViews, ReuseViews, OrganizationViews, UserViews
 from .metrics import OrgDatasetsViews, OrgResourcesDownloads, OrgReusesViews
 from .metrics import aggregate_datasets_daily, aggregate_reuses_daily
@@ -70,7 +70,6 @@ class Counter(object):
     '''Perform reverse rooting and count for daily stats'''
     def __init__(self):
         self.routes = {}
-        self.api = PiwikClient()
 
     def route(self, endpoint):
         def wrapper(func):
@@ -117,13 +116,23 @@ class Counter(object):
         self.count_downloads(day)
 
     def count_views(self, day):
-        for row in self.api.get('Actions.getPageUrls', period='day', date=day, expanded=1):
+        params = {
+            'period': 'day',
+            'date': day,
+            'expanded': 1
+        }
+        for row in analyze('Actions.getPageUrls', **params):
             self.handle_views(row, day)
 
     def count_downloads(self, day):
-        for row in self.api.get('Actions.getDownloads', period='day', date=day, expanded=1):
+        params = {
+            'period': 'day',
+            'date': day,
+            'expanded': 1
+        }
+        for row in analyze('Actions.getDownloads', **params):
             self.handle_downloads(row, day)
-        for row in self.api.get('Actions.getOutlinks', period='day', date=day, expanded=1):
+        for row in analyze('Actions.getOutlinks', **params):
             self.handle_downloads(row, day)
 
     def handle_views(self, row, day):
