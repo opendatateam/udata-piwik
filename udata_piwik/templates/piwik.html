@@ -22,14 +22,14 @@
     require(['pubsub'], function(pubsub) {
       var resourceDownload = {{config.PIWIK_GOALS.RESOURCE_DOWNLOAD}};
       if (resourceDownload) {
-        pubsub.events.subscribe('resource-download', function () {
+        pubsub.subscribe('resource-download', function () {
           console.debug('Tracking goal resource download %s', resourceDownload);
           _paq.push(['trackGoal', resourceDownload]);
         });
       }
       var resourceRedirect = {{config.PIWIK_GOALS.RESOURCE_REDIRECT}};
       if (resourceRedirect) {
-        pubsub.events.subscribe('resource-redirect', function () {
+        pubsub.subscribe('resource-redirect', function () {
           console.debug('Tracking goal resource redirect %s', resourceRedirect);
           _paq.push(['trackGoal', resourceRedirect]);
         });
