@@ -19,18 +19,18 @@
   })();
 
   {% if config.PIWIK_GOALS %}
-    require(['pubsub'], function(pubsub) {
+    require(['pubsub', 'logger'], function(pubsub, log) {
       var resourceDownload = {{config.PIWIK_GOALS.RESOURCE_DOWNLOAD}};
       if (resourceDownload) {
         pubsub.subscribe('resource-download', function () {
-          console.debug('Tracking goal resource download %s', resourceDownload);
+          log.debug('Tracking goal resource download', resourceDownload);
           _paq.push(['trackGoal', resourceDownload]);
         });
       }
       var resourceRedirect = {{config.PIWIK_GOALS.RESOURCE_REDIRECT}};
       if (resourceRedirect) {
         pubsub.subscribe('resource-redirect', function () {
-          console.debug('Tracking goal resource redirect %s', resourceRedirect);
+          log.debug('Tracking goal resource redirect', resourceRedirect);
           _paq.push(['trackGoal', resourceRedirect]);
         });
       }
