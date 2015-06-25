@@ -5,6 +5,9 @@
   {% if g.error and g.error.code -%}
   _paq.push(['setDocumentTitle', '{{g.error.code}}/URL = ' +  encodeURIComponent(document.location.pathname+document.location.search) + '/From = ' + encodeURIComponent(document.referrer)]);
   {%- endif %}
+  {% if current_user.is_authenticated() %}
+    _paq.push(['setUserId', '{{current_user.id}}']);
+  {% endif %}
   _paq.push(['trackPageView']);
   _paq.push(['enableLinkTracking']);
   (function() {
@@ -14,6 +17,25 @@
     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0]; g.type='text/javascript';
     g.defer=true; g.async=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
   })();
+
+  {% if config.PIWIK_GOALS %}
+    require(['pubsub', 'logger'], function(pubsub, log) {
+      var resourceDownload = {{config.PIWIK_GOALS.RESOURCE_DOWNLOAD}};
+      if (resourceDownload) {
+        pubsub.subscribe('resource-download', function () {
+          log.debug('Tracking goal resource download', resourceDownload);
+          _paq.push(['trackGoal', resourceDownload]);
+        });
+      }
+      var resourceRedirect = {{config.PIWIK_GOALS.RESOURCE_REDIRECT}};
+      if (resourceRedirect) {
+        pubsub.subscribe('resource-redirect', function () {
+          log.debug('Tracking goal resource redirect', resourceRedirect);
+          _paq.push(['trackGoal', resourceRedirect]);
+        });
+      }
+    });
+  {% endif %}
 </script>
 <noscript><p><img src="http://{{config.PIWIK_URL}}/piwik.php?idsite={{config.PIWIK_ID}}" style="border:0;" alt="" /></p></noscript>
 {% endif %}
