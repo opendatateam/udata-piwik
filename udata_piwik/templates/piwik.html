@@ -20,14 +20,14 @@
 
   {% if config.PIWIK_GOALS %}
     require(['pubsub', 'logger'], function(pubsub, log) {
-      var resourceDownload = {{config.PIWIK_GOALS.RESOURCE_DOWNLOAD}};
+      var resourceDownload = {{config.PIWIK_GOALS.RESOURCE_DOWNLOAD}} || null;
       if (resourceDownload) {
         pubsub.subscribe('resource-download', function () {
           log.debug('Tracking goal resource download', resourceDownload);
           _paq.push(['trackGoal', resourceDownload]);
         });
       }
-      var resourceRedirect = {{config.PIWIK_GOALS.RESOURCE_REDIRECT}};
+      var resourceRedirect = {{config.PIWIK_GOALS.RESOURCE_REDIRECT}} || null;
       if (resourceRedirect) {
         pubsub.subscribe('resource-redirect', function () {
           log.debug('Tracking goal resource redirect', resourceRedirect);
