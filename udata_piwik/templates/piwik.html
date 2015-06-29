@@ -34,6 +34,13 @@
           _paq.push(['trackGoal', resourceRedirect]);
         });
       }
+      var share = {{config.PIWIK_GOALS.SHARE}} || null;
+      if (share) {
+        pubsub.subscribe('share', function () {
+          log.debug('Tracking goal share', share);
+          _paq.push(['trackGoal', share]);
+        });
+      }
     });
   {% endif %}
 </script>
