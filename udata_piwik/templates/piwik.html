@@ -20,7 +20,7 @@
 
   {% if config.PIWIK_GOALS %}
     require(['pubsub', 'logger'], function(pubsub, log) {
-      var goals = JSON.parse('{{config.PIWIK_GOALS}}'.split('&#39;').join('"'));
+      var goals = {{config.PIWIK_GOALS|to_json|safe}};
       for (var goal in goals) {
         var value = goals[goal];
         pubsub.subscribe(goal, function () {
