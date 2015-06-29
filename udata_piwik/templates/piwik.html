@@ -20,25 +20,12 @@
 
   {% if config.PIWIK_GOALS %}
     require(['pubsub', 'logger'], function(pubsub, log) {
-      var resourceDownload = {{config.PIWIK_GOALS.RESOURCE_DOWNLOAD}} || null;
-      if (resourceDownload) {
-        pubsub.subscribe('resource-download', function () {
-          log.debug('Tracking goal resource download', resourceDownload);
-          _paq.push(['trackGoal', resourceDownload]);
-        });
-      }
-      var resourceRedirect = {{config.PIWIK_GOALS.RESOURCE_REDIRECT}} || null;
-      if (resourceRedirect) {
-        pubsub.subscribe('resource-redirect', function () {
-          log.debug('Tracking goal resource redirect', resourceRedirect);
-          _paq.push(['trackGoal', resourceRedirect]);
-        });
-      }
-      var share = {{config.PIWIK_GOALS.SHARE}} || null;
-      if (share) {
-        pubsub.subscribe('share', function () {
-          log.debug('Tracking goal share', share);
-          _paq.push(['trackGoal', share]);
+      var goals = JSON.parse('{{config.PIWIK_GOALS}}'.split('&#39;').join('"'));
+      for (var goal in goals) {
+        var value = goals[goal];
+        pubsub.subscribe(goal, function () {
+          log.debug('Tracking goal', goal, 'with value', value);
+          _paq.push(['trackGoal', value]);
         });
       }
     });
