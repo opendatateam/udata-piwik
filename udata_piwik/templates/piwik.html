@@ -19,15 +19,17 @@
   })();
 
   {% if config.PIWIK_GOALS %}
-    require(['udata'], function(udata) {
-      var goals = {{config.PIWIK_GOALS|to_json|safe}};
-      for (var goal in goals) {
-        var value = goals[goal];
-        udata.pubsub.subscribe(goal, function () {
-          udata.log.debug('Tracking goal', goal, 'with value', value);
-          _paq.push(['trackGoal', value]);
-        });
-      }
+    require(['app'], function (){ // app is the name of the bundle
+      require(['pubsub', 'logger'], function(pubsub, log) {
+        var goals = {{config.PIWIK_GOALS|to_json|safe}};
+        for (var goal in goals) {
+          var value = goals[goal];
+          pubsub.subscribe(goal, function () {
+            log.debug('Tracking goal', goal, 'with value', value);
+            _paq.push(['trackGoal', value]);
+          });
+        }
+      });
     });
   {% endif %}
 </script>
