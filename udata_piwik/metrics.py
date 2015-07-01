@@ -134,7 +134,7 @@ class OrgDatasetsViews(Metric):
     display_name = _('Datasets views')
 
     def get_value(self):
-        ids = [d.id for d in Dataset.objects(organization=self.target).only('id')]
+        ids = [d.id for d in (Dataset.objects(organization=self.target).only('id') or [])]
         return int(Metrics.objects(object_id__in=ids, level='daily').sum('values.nb_uniq_visitors'))
 
 
@@ -146,7 +146,7 @@ class OrgResourcesDownloads(Metric):
     def get_value(self):
         ids = itertools.chain(*[
             [r.id for r in d.resources]
-            for d in Dataset.objects(organization=self.target).only('resources')
+            for d in (Dataset.objects(organization=self.target).only('resources') or [])
         ])
         return int(Metrics.objects(object_id__in=ids, level='daily').sum('values.nb_uniq_visitors'))
 
@@ -157,7 +157,7 @@ class OrgReusesViews(Metric):
     display_name = _('Reuses views')
 
     def get_value(self):
-        ids = [d.id for d in Reuse.objects(organization=self.target).only('id')]
+        ids = [d.id for d in (Reuse.objects(organization=self.target).only('id') or [])]
         return int(Metrics.objects(object_id__in=ids, level='daily').sum('values.nb_uniq_visitors'))
 
 
