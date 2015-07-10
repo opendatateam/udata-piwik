@@ -19,18 +19,14 @@
   })();
 
   {% if config.PIWIK_GOALS %}
-    require(['app'], function (){ // app is the name of the bundle
-      require(['pubsub', 'logger'], function(pubsub, log) {
-        var goals = {{config.PIWIK_GOALS|to_json|safe}};
-        for (var goal in goals) {
-          var value = goals[goal];
-          pubsub.subscribe(goal, function () {
-            log.debug('Tracking goal', goal, 'with value', value);
-            _paq.push(['trackGoal', value]);
-          });
-        }
-      });
+  var goals = {{config.PIWIK_GOALS|to_json|safe}};
+  for (var goal in goals) {
+    var value = goals[goal];
+    uData.pubsub.subscribe(goal, function () {
+      uData.log.debug('Tracking goal', goal, 'with value', value);
+      _paq.push(['trackGoal', value]);
     });
+  }
   {% endif %}
 </script>
 <noscript><p><img src="http://{{config.PIWIK_URL}}/piwik.php?idsite={{config.PIWIK_ID}}" style="border:0;" alt="" /></p></noscript>
