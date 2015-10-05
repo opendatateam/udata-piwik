@@ -12,13 +12,18 @@ from werkzeug.routing import RequestRedirect
 from werkzeug.urls import url_parse
 
 from udata.core.metrics.models import Metrics
-from udata.models import User, Organization, Reuse, Dataset, db
+from udata.models import (
+    db, User, Organization, Reuse, Dataset, CommunityResource
+)
 from udata.utils import hash_url, get_by
 
 from .client import analyze
-from .metrics import DatasetViews, ResourceViews, ReuseViews, OrganizationViews, UserViews
-from .metrics import OrgDatasetsViews, OrgResourcesDownloads, OrgReusesViews
-from .metrics import aggregate_datasets_daily, aggregate_reuses_daily
+from .metrics import (
+    DatasetViews, ResourceViews, ReuseViews, OrganizationViews, UserViews,
+    OrgDatasetsViews, OrgResourcesDownloads, OrgReusesViews,
+    CommunityResourceViews,
+    aggregate_datasets_daily, aggregate_reuses_daily
+)
 
 
 log = logging.getLogger(__name__)
@@ -155,10 +160,14 @@ class Counter(object):
         if 'url' in row:
             try:
                 hashed_url = hash_url(row['url'])
-                query = db.Q(resources__urlhash=hashed_url) | db.Q(community_resources__urlhash=hashed_url)
-                dataset = Dataset.objects(query).first()
-                if dataset:
-                    resource = get_by(dataset.resources + dataset.community_resources, 'urlhash', hashed_url)
+                data = (
+                    Dataset.objects(resources__urlhash=hashed_url).first()
+                    or
+                    CommunityResource.objects(urlhash=hashed_url).first()
+                )
+                if isinstance(data, Dataset):
+                    dataset = data
+                    resource = get_by(dataset.resources, 'urlhash', hashed_url)
                     log.debug('Found resource download: %s', resource.url)
                     self.count(resource, day, row)
                     metric = ResourceViews(resource)
@@ -167,6 +176,16 @@ class Counter(object):
                     dataset.save()
                     if dataset.organization:
                         OrgResourcesDownloads(dataset.organization).compute()
+                elif isinstance(data, CommunityResource):
+                    resource = data
+                    log.debug('Found community resource download: %s',
+                              resource.url)
+                    self.count(resource, day, row)
+                    metric = CommunityResourceViews(resource)
+                    metric.compute()
+                    resource.metrics[metric.name] = metric.value
+                    resource.save()
+
             except:
                 log.exception('Unable to count download for %s', row['url'])
         if 'subtable' in row:
