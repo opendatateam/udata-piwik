@@ -172,8 +172,10 @@ class Counter(object):
                     self.count(resource, day, row)
                     metric = ResourceViews(resource)
                     metric.compute()
-                    resource.metrics[metric.name] = metric.value
-                    dataset.save()
+                    cmd = 'set__resources__S__metrics__{0}'.format(metric.name)
+                    qs = Dataset.objects(id=dataset.id,
+                                         resources__id=resource.id)
+                    qs.update(**{cmd: metric.value})
                     if dataset.organization:
                         OrgResourcesDownloads(dataset.organization).compute()
                 elif isinstance(data, CommunityResource):
