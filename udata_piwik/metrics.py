@@ -189,8 +189,8 @@ KEYS = 'nb_uniq_visitors nb_hits nb_visits'.split()
 def aggregate_datasets_daily(org, day):
     keys = ['datasets_{0}'.format(k) for k in KEYS]
     ids = [d.id for d in Dataset.objects(organization=org).only('id')]
-    date = day.isoformat()
-    metrics = Metrics.objects(object_id__in=ids, level='daily', date=date)
+    metrics = Metrics.objects(object_id__in=ids,
+                              level='daily', date=day.isoformat())
     values = [int(metrics.sum('values.{0}'.format(k))) for k in KEYS]
     return Metrics.objects.update_daily(org, day, **dict(zip(keys, values)))
 
@@ -198,7 +198,7 @@ def aggregate_datasets_daily(org, day):
 def aggregate_reuses_daily(org, day):
     keys = ['reuses_{0}'.format(k) for k in KEYS]
     ids = [r.id for r in Reuse.objects(organization=org).only('id')]
-    date = day.isoformat()
-    metrics = Metrics.objects(object_id__in=ids, level='daily', date=date)
+    metrics = Metrics.objects(object_id__in=ids,
+                              level='daily', date=day.isoformat())
     values = [int(metrics.sum('values.{0}'.format(k))) for k in KEYS]
     Metrics.objects.update_daily(org, day, **dict(zip(keys, values)))
