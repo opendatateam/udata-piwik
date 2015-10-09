@@ -8,12 +8,12 @@ from udata.core.metrics import Metric
 from udata.core.metrics.models import Metrics
 from udata.i18n import lazy_gettext as _
 
-from udata.models import User, Organization, Reuse, Dataset, Resource
+from udata.models import (
+    User, Organization, Reuse, Dataset, Resource, CommunityResource
+)
+
 
 log = logging.getLogger(__name__)
-
-
-from . import client
 
 
 class HitsMetric(Metric):
@@ -30,6 +30,10 @@ class DatasetHits(HitsMetric):
 
 class ResourceHits(HitsMetric):
     model = Resource
+
+
+class CommunityResourceHits(HitsMetric):
+    model = CommunityResource
 
 
 class ReuseHits(HitsMetric):
@@ -60,6 +64,10 @@ class ResourceVisits(VisitsMetric):
     model = Resource
 
 
+class CommunityResourceVisits(VisitsMetric):
+    model = CommunityResource
+
+
 class ReuseVisits(VisitsMetric):
     model = Reuse
 
@@ -88,6 +96,10 @@ class ResourceVisitors(VisitorsMetric):
     model = Resource
 
 
+class CommunityResourceVisitors(VisitorsMetric):
+    model = CommunityResource
+
+
 class ReuseVisitors(VisitorsMetric):
     model = Reuse
 
@@ -105,7 +117,8 @@ class ViewsMetric(Metric):
     display_name = _('Views')
 
     def get_value(self):
-        return int(Metrics.objects(object_id=self.target.id, level='daily').sum('values.nb_uniq_visitors'))
+        return int(Metrics.objects(object_id=self.target.id, level='daily')
+                          .sum('values.nb_uniq_visitors'))
 
 
 class DatasetViews(ViewsMetric):
@@ -114,6 +127,10 @@ class DatasetViews(ViewsMetric):
 
 class ResourceViews(ViewsMetric):
     model = Resource
+
+
+class CommunityResourceViews(ViewsMetric):
+    model = CommunityResource
 
 
 class ReuseViews(ViewsMetric):
@@ -134,8 +151,10 @@ class OrgDatasetsViews(Metric):
     display_name = _('Datasets views')
 
     def get_value(self):
-        ids = [d.id for d in (Dataset.objects(organization=self.target).only('id') or [])]
-        return int(Metrics.objects(object_id__in=ids, level='daily').sum('values.nb_uniq_visitors'))
+        ids = [d.id for d in
+               (Dataset.objects(organization=self.target).only('id') or [])]
+        return int(Metrics.objects(object_id__in=ids, level='daily')
+                          .sum('values.nb_uniq_visitors'))
 
 
 class OrgResourcesDownloads(Metric):
@@ -145,10 +164,11 @@ class OrgResourcesDownloads(Metric):
 
     def get_value(self):
         ids = itertools.chain(*[
-            [r.id for r in d.resources]
-            for d in (Dataset.objects(organization=self.target).only('resources') or [])
+            [r.id for r in d.resources] for d in
+            (Dataset.objects(organization=self.target).only('resources') or [])
         ])
-        return int(Metrics.objects(object_id__in=ids, level='daily').sum('values.nb_uniq_visitors'))
+        return int(Metrics.objects(object_id__in=ids, level='daily')
+                          .sum('values.nb_uniq_visitors'))
 
 
 class OrgReusesViews(Metric):
@@ -157,8 +177,10 @@ class OrgReusesViews(Metric):
     display_name = _('Reuses views')
 
     def get_value(self):
-        ids = [d.id for d in (Reuse.objects(organization=self.target).only('id') or [])]
-        return int(Metrics.objects(object_id__in=ids, level='daily').sum('values.nb_uniq_visitors'))
+        ids = [d.id for d in
+               (Reuse.objects(organization=self.target).only('id') or [])]
+        return int(Metrics.objects(object_id__in=ids, level='daily')
+                          .sum('values.nb_uniq_visitors'))
 
 
 KEYS = 'nb_uniq_visitors nb_hits nb_visits'.split()
@@ -167,7 +189,8 @@ KEYS = 'nb_uniq_visitors nb_hits nb_visits'.split()
 def aggregate_datasets_daily(org, day):
     keys = ['datasets_{0}'.format(k) for k in KEYS]
     ids = [d.id for d in Dataset.objects(organization=org).only('id')]
-    metrics = Metrics.objects(object_id__in=ids, level='daily', date=day.isoformat())
+    metrics = Metrics.objects(object_id__in=ids,
+                              level='daily', date=day.isoformat())
     values = [int(metrics.sum('values.{0}'.format(k))) for k in KEYS]
     return Metrics.objects.update_daily(org, day, **dict(zip(keys, values)))
 
@@ -175,6 +198,7 @@ def aggregate_datasets_daily(org, day):
 def aggregate_reuses_daily(org, day):
     keys = ['reuses_{0}'.format(k) for k in KEYS]
     ids = [r.id for r in Reuse.objects(organization=org).only('id')]
-    metrics = Metrics.objects(object_id__in=ids, level='daily', date=day.isoformat())
+    metrics = Metrics.objects(object_id__in=ids,
+                              level='daily', date=day.isoformat())
     values = [int(metrics.sum('values.{0}'.format(k))) for k in KEYS]
     Metrics.objects.update_daily(org, day, **dict(zip(keys, values)))
