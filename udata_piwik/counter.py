@@ -172,6 +172,7 @@ class Counter(object):
                     self.count(resource, day, row)
                     metric = ResourceViews(resource)
                     metric.compute()
+                    # Use the MongoDB positionnal operator ($)
                     cmd = 'set__resources__S__metrics__{0}'.format(metric.name)
                     qs = Dataset.objects(id=dataset.id,
                                          resources__id=resource.id)
