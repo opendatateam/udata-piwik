@@ -93,14 +93,21 @@ class Counter(object):
                     model.objects.update(**commands)
                 except:
                     log.exception('Unable to clean %s', model.__name__)
-            commands.update(dict(('set__resources__metrics__{0}'.format(k), 0) for k in KEYS))
-            try:
-                Dataset.objects.update(**commands)
-            except:
-                log.exception('Unable to clear datasets')
+            for dataset in Dataset.objects:
+                dcommands = commands.copy()
+                for i in range(len(dataset.resources)):
+                    dcommands.update({
+                        'set__resources__{0}__metrics__{1}'.format(i, k): 0
+                        for k in KEYS
+                    })
+                try:
+                    dataset.update(**dcommands)
+                except:
+                    log.exception('Unable to clear dataset %s', dataset.id)
 
         commands = dict(('unset__values__{0}'.format(k), '1') for k in KEYS)
-        return Metrics.objects(level='daily', date=day).update(upsert=False, **commands)
+        metrics = Metrics.objects(level='daily', date=day)
+        return metrics.update(upsert=False, **commands)
 
     def count(self, obj, day, data):
         oid = obj.id if hasattr(obj, 'id') else obj
@@ -113,7 +120,8 @@ class Counter(object):
                 obj.metrics[k] = data[k]
 
         commands = dict(('inc__values__{0}'.format(k), data[k]) for k in KEYS)
-        return Metrics.objects(object_id=oid, level='daily', date=day).update_one(upsert=True, **commands)
+        metrics = Metrics.objects(object_id=oid, level='daily', date=day)
+        return metrics.update_one(upsert=True, **commands)
 
     def count_for(self, day):
         self.clear(day)
@@ -145,7 +153,8 @@ class Counter(object):
             try:
                 endpoint, kwargs = route_from(row['url'])
                 if endpoint in self.routes:
-                    log.debug('Found matching route %s for %s', endpoint, row['url'])
+                    log.debug('Found matching route %s for %s',
+                              endpoint, row['url'])
                     handler = self.routes[endpoint]
                     handler(row, day, **kwargs)
             except (NotFound, RouteNotFound):
