@@ -95,7 +95,7 @@ class Counter(object):
                     log.exception('Unable to clean %s', model.__name__)
             for dataset in Dataset.objects:
                 dcommands = commands.copy()
-                for i in range(len(dataset.resources)):
+                for i, _ in enumerate(dataset.resources):
                     dcommands.update({
                         'set__resources__{0}__metrics__{1}'.format(i, k): 0
                         for k in KEYS
