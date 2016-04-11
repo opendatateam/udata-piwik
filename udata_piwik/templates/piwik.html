@@ -5,7 +5,7 @@
   {% if g.error and g.error.code -%}
   _paq.push(['setDocumentTitle', '{{g.error.code}}/URL = ' +  encodeURIComponent(document.location.pathname+document.location.search) + '/From = ' + encodeURIComponent(document.referrer)]);
   {%- endif %}
-  {% if current_user.is_authenticated() %}
+  {% if current_user.is_authenticated %}
     _paq.push(['setUserId', '{{current_user.id}}']);
   {% endif %}
   _paq.push(['trackPageView']);
