@@ -20,6 +20,8 @@ def analyze(method, **kwargs):
         'method': method,
         'format': kwargs.pop('format', 'json'),
     }
+    if current_app.config['PIWIK_AUTH']:
+        data['token_auth'] = current_app.config['PIWIK_AUTH']
     if 'date' in kwargs:
         dt = kwargs.pop('date')
         if isinstance(dt, date):
