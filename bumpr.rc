@@ -4,6 +4,7 @@ regex = \s{4}version='(?P<version>.+?)',
 vcs = git
 commit = true
 tag = true
+tag_format = v{version}
 push = true
 clean =
     python setup.py clean
