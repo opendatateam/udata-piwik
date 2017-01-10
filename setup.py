@@ -15,11 +15,14 @@ RE_BADGE = re.compile(r'^\[\!\[(?P<text>.*?)\]\[(?P<badge>.*?)\]\]\[(?P<target>.
 
 BADGES_TO_KEEP = ['gitter-badge']
 
+RST_TITLE_LEVELS = ['=', '-', '*']
+
 RST_BADGE = '''\
 .. image:: {badge}
     :target: {target}
     :alt: {text}
 '''
+
 
 def md2pypi(filename):
     '''
@@ -58,6 +61,14 @@ def md2pypi(filename):
             text=match.group('text'),
             url=refs[match.group('ref')]
         ))
+
+    for match in RE_TITLE.finditer(content):
+        underchar = RST_TITLE_LEVELS[len(match.group('level')) - 1]
+        title = match.group('title')
+        underline = underchar * len(title)
+
+        full_title = '\n'.join((title, underline))
+        content = content.replace(match.group(0), full_title)
 
     return content
 
