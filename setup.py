@@ -74,7 +74,7 @@ tests_require = []
 
 setup(
     name='udata-piwik',
-    version='0.9.0',
+    version='0.9.1.dev',
     description='Piwik support for uData',
     long_description=long_description,
     url='https://github.com/opendatateam/udata-piwik',
