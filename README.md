@@ -11,7 +11,6 @@ Compatibility
 
 **udata-piwik** requires Python 2.7+ and [uData][].
 
-
 Installation
 ------------
 
