@@ -1,2 +1,2 @@
-https://github.com/etalab/udata/tarball/dev
+--pre udata
 -r https://raw.githubusercontent.com/opendatateam/udata/dev/requirements/test.pip
