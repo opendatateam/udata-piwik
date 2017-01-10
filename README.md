@@ -1,18 +1,15 @@
-uData-piwik
-===========
+# uData-piwik
 
 [![Build status][circleci-badge]][circleci-url]
 [![Join the chat at https://gitter.im/opendatateam/udata][gitter-badge]][gitter-url]
 
 This plugin provide integration between uData and Piwik
 
-Compatibility
--------------
+## Compatibility
 
 **udata-piwik** requires Python 2.7+ and [uData][].
 
-Installation
-------------
+## Installation
 
 Install [uData][].
 

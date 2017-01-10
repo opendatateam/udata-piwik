@@ -2,7 +2,7 @@
 
 ## Current (in progress)
 
-- Nothing yet
+- Fix build and packaging
 
 ## 0.9.0 (2017-01-10)
 
