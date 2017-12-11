@@ -2,7 +2,7 @@
 
 ## Current (in progress)
 
-- Add a timeout to `track()`
+- Add a timeout to `track()` [#18](https://github.com/opendatateam/udata-piwik/pull/18)
 
 ## 0.9.1 (2017-01-10)
 
