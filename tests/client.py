@@ -7,6 +7,7 @@ import requests
 from retrying import retry
 
 from udata.core.dataset.models import ResourceMixin
+from udata_piwik.client import track
 
 from .settings import PiwikSettings
 
@@ -17,6 +18,8 @@ RESET_URL = '{0}/reset.php'.format(BASE_URL)
 
 
 def make_track_request(payload, dt=None):
+    # FIXME
+    return track(payload['url'])
     dt = dt or datetime.now()
     payload.update({
         'h': dt.hour,
@@ -41,7 +44,6 @@ def has_data():
     }
     r = requests.get('%s/index.php' % BASE_URL, params=data)
     data = r.json()
-    print(data)
     assert isinstance(data, list) and len(data)
     return True
 
