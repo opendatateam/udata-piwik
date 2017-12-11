@@ -2,7 +2,7 @@
 
 ## Current (in progress)
 
-- Nothing yet
+- Add a timeout to `analyze()` [#19](https://github.com/opendatateam/udata-piwik/pull/19)
 
 ## 0.9.2 (2017-12-11)
 
