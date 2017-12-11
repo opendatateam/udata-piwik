@@ -19,7 +19,7 @@ dependencies:
 test:
   override:
     # disable tests, awaiting new tests architecture
-    - true
+    - python -c 'True'
   post:
     # Build a distributable wheel
     - if [[ $CIRCLE_TAG ]]; then python setup.py bdist_wheel; else python setup.py egg_info -b $CIRCLE_BUILD_NUM bdist_wheel; fi
