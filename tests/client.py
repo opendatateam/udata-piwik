@@ -9,7 +9,7 @@ from retrying import retry
 from udata.core.dataset.models import ResourceMixin
 from udata_piwik.client import track
 
-from .settings import PiwikSettings
+from .conftest import PiwikSettings
 
 BASE_URL = 'http://{0.PIWIK_URL}'.format(PiwikSettings)
 TRACK_URL = '{0}/piwik.php?idsite={1.PIWIK_ID}&rec=1'.format(BASE_URL,
