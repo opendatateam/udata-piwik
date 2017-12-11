@@ -39,8 +39,10 @@ PIWIK_GOALS = {
     'RESOURCE_DOWNLOAD': 5,
     'RESOURCE_REDIRECT': 6,
 }
-# Track method `requests` timeout
+# `client.track` method `requests` timeout
 PIWIK_TRACK_TIMEOUT = 60  # in seconds
+# `client.analyze` method `requests` timeout
+PIWIK_ANALYZE_TIMEOUT = 60 * 5  # in seconds
 ```
 
 [circleci-url]: https://circleci.com/gh/opendatateam/udata-piwik
