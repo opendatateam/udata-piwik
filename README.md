@@ -25,6 +25,22 @@ Modify your local configuration file of **udata** (typically, `udata.cfg`) as fo
 
 ```python
 PLUGINS = ['piwik']
+# Tracked site id in Piwik
+PIWIK_ID = 1
+PIWIK_URL = 'stats.data.gouv.fr'
+PIWIK_AUTH = '<32-chars-auth-token-from-piwik>'
+# Mapping of piwik goals {'<name_in_udata>': <id_in_piwik>}
+# All keys are required
+PIWIK_GOALS = {
+    'NEW_DATASET': 1,
+    'NEW_REUSE': 2,
+    'NEW_FOLLOW': 3,
+    'SHARE': 4,
+    'RESOURCE_DOWNLOAD': 5,
+    'RESOURCE_REDIRECT': 6,
+}
+# Track method `requests` timeout
+PIWIK_TRACK_TIMEOUT = 60  # in seconds
 ```
 
 [circleci-url]: https://circleci.com/gh/opendatateam/udata-piwik
