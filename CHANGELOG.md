@@ -1,5 +1,9 @@
 # Changelog
 
+## Current (in progress)
+
+- Nothing yet
+
 ## 0.9.3 (2017-12-11)
 
 - Add a timeout to `analyze()` [#19](https://github.com/opendatateam/udata-piwik/pull/19)
