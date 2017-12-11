@@ -2,7 +2,7 @@
 
 ## Current (in progress)
 
-- Nothing yet
+- Add a timeout to `track()`
 
 ## 0.9.1 (2017-01-10)
 

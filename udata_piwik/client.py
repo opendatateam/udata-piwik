@@ -42,4 +42,5 @@ def track(url, **kwargs):
         'token_auth': current_app.config['PIWIK_AUTH']
     }
     data.update(kwargs)
-    requests.post(base_url, data=data)
+    timeout = current_app.config['PIWIK_TRACK_TIMEOUT']
+    requests.post(base_url, data=data, timeout=timeout)
