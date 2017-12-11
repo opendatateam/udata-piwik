@@ -1,5 +1,9 @@
 # Changelog
 
+## Current (in progress)
+
+- Nothing yet
+
 ## 0.9.2 (2017-12-11)
 
 - Add a timeout to `track()` [#18](https://github.com/opendatateam/udata-piwik/pull/18)
