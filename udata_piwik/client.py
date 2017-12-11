@@ -10,6 +10,8 @@ from flask import current_app
 
 log = logging.getLogger(__name__)
 
+DEFAULT_TRACK_TIMEOUT = 60  # in seconds
+
 
 def analyze(method, **kwargs):
     """Retrieve JSON stats from Piwik for a given `method` and parameters."""
@@ -42,5 +44,6 @@ def track(url, **kwargs):
         'token_auth': current_app.config['PIWIK_AUTH']
     }
     data.update(kwargs)
-    timeout = current_app.config['PIWIK_TRACK_TIMEOUT']
+    timeout = current_app.config.get('PIWIK_TRACK_TIMEOUT',
+                                     DEFAULT_TRACK_TIMEOUT)
     requests.post(base_url, data=data, timeout=timeout)
