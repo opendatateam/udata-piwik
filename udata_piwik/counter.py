@@ -72,7 +72,7 @@ def is_today(day):
 
 
 class Counter(object):
-    '''Perform reverse rooting and count for daily stats'''
+    '''Perform reverse routing and count for daily stats'''
     def __init__(self):
         self.routes = {}
 
