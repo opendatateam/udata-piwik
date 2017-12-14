@@ -6,9 +6,13 @@ from datetime import date
 
 from udata.core.metrics.models import Metrics
 from udata.core.dataset.factories import (
-    DatasetFactory, ResourceFactory, CommunityResourceFactory
+    DatasetFactory, ResourceFactory
 )
 from udata.core.organization.factories import OrganizationFactory
+from udata.core.post.factories import PostFactory
+from udata.core.reuse.factories import ReuseFactory
+from udata.core.user.factories import UserFactory
+
 from udata_piwik.commands import fill
 
 from .client import visit, has_data, reset
@@ -21,15 +25,7 @@ def dataset_resource():
     # 2x visit
     visit(dataset)
     visit(dataset)
-    visit(resource)
     return dataset, resource
-
-
-@pytest.fixture(scope='module')
-def community_resource():
-    community_resource = CommunityResourceFactory()
-    visit(community_resource)
-    return community_resource
 
 
 @pytest.fixture(scope='module')
@@ -40,36 +36,60 @@ def organization():
 
 
 @pytest.fixture(scope='module')
+def post():
+    post = PostFactory()
+    visit(post)
+    return post
+
+
+@pytest.fixture(scope='module')
+def reuse():
+    reuse = ReuseFactory()
+    visit(reuse)
+    return reuse
+
+
+@pytest.fixture(scope='module')
+def user():
+    user = UserFactory()
+    visit(user)
+    return user
+
+
+@pytest.fixture(scope='module')
 def reset_piwik():
     reset()
 
 
 @pytest.fixture(scope='module')
 def fixtures(clean_db, reset_piwik, dataset_resource, organization,
-             community_resource):
+             user, reuse, post):
     # wait for Piwik to be populated
     assert has_data()
     fill()
     dataset, resource = dataset_resource
+    # TODO make this (and fixtures creation) dynamic
     return {
         'dataset': dataset,
         'organization': organization,
         'resource': resource,
-        'community_resource': community_resource
+        'user': user,
+        'reuse': reuse,
+        'post': post
     }
 
 
 def test_objects_have_metrics(fixtures):
-    # TODO more objects
-    # TODO search 'def external_url' to know which objects are concerned
+    # XXX is this list exhaustive?
+    # XXX Tested (community)resources and post w/ no luck
     metrics_dataset = Metrics.objects.get_for(fixtures['dataset'])
     assert len(metrics_dataset) == 1
     metrics_org = Metrics.objects.get_for(fixtures['organization'])
     assert len(metrics_org) == 1
-    # metrics_resource = Metrics.objects.get_for(fixtures['resource'])
-    # assert len(metrics_resource) == 1
-    # metrics_resource_com = Metrics.objects.get_for(fixtures['resource_com'])
-    # assert len(metrics_resource_com) == 1
+    metrics_user = Metrics.objects.get_for(fixtures['user'])
+    assert len(metrics_user) == 1
+    metrics_reuse = Metrics.objects.get_for(fixtures['reuse'])
+    assert len(metrics_reuse) == 1
 
 
 def test_dataset_metric(fixtures):

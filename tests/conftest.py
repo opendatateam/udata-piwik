@@ -10,7 +10,8 @@ from udata.app import create_app
 from udata.models import db as DB
 from udata.settings import Testing
 
-MODULES = ['core.dataset', 'core.organization']
+MODULES = ['core.dataset', 'core.organization', 'core.user', 'core.reuse',
+           'core.discussions', 'core.post']
 
 
 class PiwikSettings(Testing):
