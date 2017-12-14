@@ -47,11 +47,8 @@ PIWIK_ANALYZE_TIMEOUT = 60 * 5  # in seconds
 
 ## Testing on local env
 
-First, clone the [udata-piwik-docker] repository and run `docker-compose up`.
-
-Then run:
-
 ```
+$ docker-compose up
 $ pip install -r requirements/test.pip
 $ pytest
 ```
