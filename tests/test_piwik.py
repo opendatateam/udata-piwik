@@ -25,6 +25,7 @@ def dataset_resource():
     # 2x visit
     visit(dataset)
     visit(dataset)
+    # 1 download on url, 1 on latest url
     download(resource)
     download(resource, latest=True)
     return dataset, resource
@@ -77,7 +78,6 @@ def fixtures(clean_db, reset_piwik, dataset_resource, organization,
     assert has_data()
     fill()
     dataset, resource = dataset_resource
-    # TODO make this (and fixtures creation) dynamic
     return {
         'dataset': dataset,
         'organization': organization,
