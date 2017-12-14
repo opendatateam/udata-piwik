@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
+import io
+import os
 import re
 
-from setuptools import setup, find_packages
+from setuptools import setup
 
+RE_REQUIREMENT = re.compile(r'^\s*-r\s*(?P<filename>.*)$')
 RE_MD_CODE_BLOCK = re.compile(r'```(?P<language>\w+)?\n(?P<lines>.*?)```', re.S)
 RE_SELF_LINK = re.compile(r'\[(.*?)\]\[\]')
 RE_LINK_TO_URL = re.compile(r'\[(?P<text>.*?)\]\((?P<url>.*?)\)')
@@ -32,7 +34,7 @@ def md2pypi(filename):
      - code-block directive
      - travis ci build badges
     '''
-    content = open(filename).read()
+    content = io.open(filename).read()
 
     for match in RE_MD_CODE_BLOCK.finditer(content):
         rst_block = '\n'.join(
@@ -74,43 +76,59 @@ def md2pypi(filename):
     return content
 
 
+def pip(filename):
+    """Parse pip reqs file and transform it to setuptools requirements."""
+    requirements = []
+    for line in open(os.path.join('requirements', filename)):
+        line = line.strip()
+        if not line or '://' in line or line.startswith('#'):
+            continue
+        match = RE_REQUIREMENT.match(line)
+        if match:
+            requirements.extend(pip(match.group('filename')))
+        else:
+            requirements.append(line)
+    return requirements
+
+
 long_description = '\n'.join((
     md2pypi('README.md'),
     md2pypi('CHANGELOG.md'),
     ''
 ))
 
+install_requires = pip('install.pip')
+tests_require = pip('test.pip')
 
-install_requires = []
-tests_require = []
 
 setup(
     name='udata-piwik',
-    version='0.9.4.dev',
+    version='0.9.4-dev',
     description='Piwik support for uData',
     long_description=long_description,
     url='https://github.com/opendatateam/udata-piwik',
-    author='Opendata Team',
-    author_email='opendatateam@data.gouv.fr',
-    packages=find_packages(),
+    author='OpenDataTeam',
+    author_email='contact@opendata.team',
+    packages=['udata_piwik'],
     include_package_data=True,
     install_requires=install_requires,
     tests_require=tests_require,
+    extras_require={
+        'test': tests_require,
+    },
     license='LGPL',
-    use_2to3=True,
-    keywords='udata piwik',
+    zip_safe=False,
+    keywords='udata, piwik',
     classifiers=[
-        "Development Status :: 3 - Alpha",
-        "Programming Language :: Python",
-        "Environment :: Web Environment",
-        "Operating System :: OS Independent",
-        "Intended Audience :: Developers",
-        "Topic :: System :: Software Distribution",
-        "Programming Language :: Python",
-        "Programming Language :: Python :: 2",
-        "Programming Language :: Python :: 2.6",
-        "Programming Language :: Python :: 2.7",
-        "Topic :: Software Development :: Libraries :: Python Modules",
-        'License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)',
+        'Development Status :: 3 - Alpha',
+        'Programming Language :: Python',
+        'Environment :: Web Environment',
+        'Operating System :: OS Independent',
+        'Intended Audience :: Developers',
+        'Topic :: System :: Software Distribution',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 2.7',
+        'Topic :: Software Development :: Libraries :: Python Modules',
     ],
 )

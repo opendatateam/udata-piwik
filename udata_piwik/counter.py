@@ -13,7 +13,7 @@ from werkzeug.urls import url_parse
 
 from udata.core.metrics.models import Metrics
 from udata.models import (
-    db, User, Organization, Reuse, Dataset, CommunityResource
+    User, Organization, Reuse, Dataset, CommunityResource
 )
 from udata.utils import hash_url, get_by
 
@@ -170,8 +170,7 @@ class Counter(object):
             try:
                 hashed_url = hash_url(row['url'])
                 data = (
-                    Dataset.objects(resources__urlhash=hashed_url).first()
-                    or
+                    Dataset.objects(resources__urlhash=hashed_url).first() or
                     CommunityResource.objects(urlhash=hashed_url).first()
                 )
                 if isinstance(data, Dataset):
