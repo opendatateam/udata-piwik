@@ -1,2 +1,2 @@
-pytest-flask
-retrying
+pytest-flask==0.10.0
+retrying==1.3.3
