@@ -37,6 +37,12 @@ def visit(obj):
     return track(obj.external_url)
 
 
+def download(obj, context_url=None, latest=False):
+    context_url = context_url or obj.url
+    url = obj.latest if latest else obj.url
+    return track(context_url, download=url)
+
+
 def reset():
     res = requests.get(RESET_URL)
     assert 'OK' in res.text

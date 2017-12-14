@@ -6,7 +6,7 @@ from datetime import date
 
 from udata.core.metrics.models import Metrics
 from udata.core.dataset.factories import (
-    DatasetFactory, ResourceFactory
+    DatasetFactory, ResourceFactory, CommunityResourceFactory
 )
 from udata.core.organization.factories import OrganizationFactory
 from udata.core.post.factories import PostFactory
@@ -15,16 +15,18 @@ from udata.core.user.factories import UserFactory
 
 from udata_piwik.commands import fill
 
-from .client import visit, has_data, reset
+from .client import visit, has_data, reset, download
 
 
 @pytest.fixture(scope='module')
 def dataset_resource():
-    resource = ResourceFactory(url='http://localhost/resource')
+    resource = ResourceFactory()
     dataset = DatasetFactory(resources=[resource])
     # 2x visit
     visit(dataset)
     visit(dataset)
+    download(resource)
+    download(resource, latest=True)
     return dataset, resource
 
 
@@ -57,13 +59,20 @@ def user():
 
 
 @pytest.fixture(scope='module')
+def community_resource():
+    community_resource = CommunityResourceFactory()
+    download(community_resource)
+    return community_resource
+
+
+@pytest.fixture(scope='module')
 def reset_piwik():
     reset()
 
 
 @pytest.fixture(scope='module')
 def fixtures(clean_db, reset_piwik, dataset_resource, organization,
-             user, reuse, post):
+             user, reuse, post, community_resource):
     # wait for Piwik to be populated
     assert has_data()
     fill()
@@ -75,13 +84,13 @@ def fixtures(clean_db, reset_piwik, dataset_resource, organization,
         'resource': resource,
         'user': user,
         'reuse': reuse,
-        'post': post
+        'post': post,
+        'community_resource': community_resource,
     }
 
 
 def test_objects_have_metrics(fixtures):
     # XXX is this list exhaustive?
-    # XXX Tested (community)resources and post w/ no luck
     metrics_dataset = Metrics.objects.get_for(fixtures['dataset'])
     assert len(metrics_dataset) == 1
     metrics_org = Metrics.objects.get_for(fixtures['organization'])
@@ -90,6 +99,10 @@ def test_objects_have_metrics(fixtures):
     assert len(metrics_user) == 1
     metrics_reuse = Metrics.objects.get_for(fixtures['reuse'])
     assert len(metrics_reuse) == 1
+    metrics_resource = Metrics.objects.get_for(fixtures['resource'])
+    assert len(metrics_resource) == 1
+    metrics_comres = Metrics.objects.get_for(fixtures['community_resource'])
+    assert len(metrics_comres) == 1
 
 
 def test_dataset_metric(fixtures):
@@ -101,12 +114,11 @@ def test_dataset_metric(fixtures):
         'nb_visits': 1}
 
 
-def test_organization_metric(fixtures):
-    metrics_org = Metrics.objects.get_for(fixtures['organization'])
-    metric = metrics_org[0]
+def test_resource_metric(fixtures):
+    metrics_resource = Metrics.objects.get_for(fixtures['resource'])
+    metric = metrics_resource[0]
     assert metric.level == 'daily'
     assert metric.date == date.today().isoformat()
-    assert metric.values == {'nb_hits': 1, 'nb_uniq_visitors': 1,
+    # 1 hit on permalink, 1 on url
+    assert metric.values == {'nb_hits': 2, 'nb_uniq_visitors': 1,
         'nb_visits': 1}
-
-# TODO test downloads (resources, community resources, permalink)
