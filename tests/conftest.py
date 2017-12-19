@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import os
 import pytest
 import sys
 from urlparse import urlparse
@@ -16,7 +17,7 @@ MODULES = ['core.dataset', 'core.organization', 'core.user', 'core.reuse',
 
 class PiwikSettings(Testing):
     PIWIK_ID = 1
-    PIWIK_URL = 'localhost:8080'
+    PIWIK_URL = os.environ.get('PIWIK_URL', 'localhost:8080')
     PIWIK_AUTH = 'eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'
     PIWIK_GOALS = {
         'NEW_DATASET': 1,

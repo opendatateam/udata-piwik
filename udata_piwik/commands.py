@@ -13,7 +13,8 @@ from .counter import counter
 log = logging.getLogger(__name__)
 
 
-m = submanager('piwik',
+m = submanager(
+    'piwik',
     help='Piwik related operations',
     description='Handle all Piwik related operations'
 )
