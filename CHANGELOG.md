@@ -2,7 +2,8 @@
 
 ## Current (in progress)
 
-- Nothing yet
+- Add (automated) tests against a Piwik instance [#20](https://github.com/opendatateam/udata-piwik/issues/20)
+- Handle download count on latest url for (community) resources [#30](https://github.com/opendatateam/udata-piwik/pull/30)
 
 ## 0.9.3 (2017-12-11)
 
