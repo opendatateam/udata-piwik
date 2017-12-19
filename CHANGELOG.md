@@ -1,5 +1,9 @@
 # Changelog
 
+## Current (in progress)
+
+- Nothing yet
+
 ## 1.0.0 (2017-12-19)
 
 - Add (automated) tests against a Piwik instance [#20](https://github.com/opendatateam/udata-piwik/issues/20)
