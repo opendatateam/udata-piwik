@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 import io
 import os
 import re
@@ -118,7 +117,7 @@ setup(
     },
     license='LGPL',
     zip_safe=False,
-    keywords='udata, piwik',
+    keywords='udata piwik',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Programming Language :: Python',

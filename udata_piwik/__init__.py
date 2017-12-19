@@ -9,7 +9,7 @@ blueprint = Blueprint('piwik', __name__, template_folder='templates')
 
 
 def init_app(app):
-    from . import metrics  # noqa
+    from . import metrics  # noqa: F401
     app.register_blueprint(blueprint)
 
     @footer_snippet
