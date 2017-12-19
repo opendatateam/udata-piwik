@@ -1,0 +1,11 @@
+version: '3'
+services:
+  piwik:
+    image: udata/piwik-test
+    ports:
+      - "8080:80"
+    environment:
+      MYSQL_ROOT_PASSWORD: piwik
+      MYSQL_DATABASE: piwik
+      MYSQL_USER: piwik
+      MYSQL_PASSWORD: piwik
