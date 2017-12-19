@@ -37,7 +37,6 @@ class RouteNotFound(Exception):
 
 
 def route_from(url, method=None):
-    print('----> route from %s' % url)
     appctx = _app_ctx_stack.top
     if appctx is None:
         raise RuntimeError('Attempted to match a URL without the '
