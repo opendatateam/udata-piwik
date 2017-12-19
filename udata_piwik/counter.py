@@ -2,6 +2,8 @@
 from __future__ import unicode_literals
 
 import logging
+import re
+import uuid
 
 from datetime import date
 
@@ -25,8 +27,9 @@ from .metrics import (
     aggregate_datasets_daily, aggregate_reuses_daily
 )
 
-
 log = logging.getLogger(__name__)
+
+LATEST_URL_REGEX = 'http[s]?://.*/datasets/r/([0-9a-f-]{36})[/]?$'
 
 
 class RouteNotFound(Exception):
@@ -34,6 +37,7 @@ class RouteNotFound(Exception):
 
 
 def route_from(url, method=None):
+    print('----> route from %s' % url)
     appctx = _app_ctx_stack.top
     if appctx is None:
         raise RuntimeError('Attempted to match a URL without the '
@@ -169,13 +173,24 @@ class Counter(object):
         if 'url' in row:
             try:
                 hashed_url = hash_url(row['url'])
-                data = (
-                    Dataset.objects(resources__urlhash=hashed_url).first() or
-                    CommunityResource.objects(urlhash=hashed_url).first()
+                last_url_match = re.match(LATEST_URL_REGEX, row['url'])
+                resource_id = last_url_match and last_url_match.group(1)
+                qs_comres = CommunityResource.objects
+                qs_res = Dataset.objects(
+                    db.Q(resources__urlhash=hashed_url) |
+                    db.Q(resources__id=resource_id)
                 )
+                qs_comres = CommunityResource.objects(
+                    db.Q(urlhash=hashed_url) |
+                    db.Q(id=resource_id)
+                )
+                data = qs_res.first() or qs_comres.first()
                 if isinstance(data, Dataset):
                     dataset = data
-                    resource = get_by(dataset.resources, 'urlhash', hashed_url)
+                    resource = (
+                        get_by(dataset.resources, 'urlhash', hashed_url) or
+                        get_by(dataset.resources, 'id', uuid.UUID(resource_id))
+                    )
                     log.debug('Found resource download: %s', resource.url)
                     self.count(resource, day, row)
                     metric = ResourceViews(resource)
