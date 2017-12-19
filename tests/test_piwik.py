@@ -63,6 +63,7 @@ def user():
 def community_resource():
     community_resource = CommunityResourceFactory()
     download(community_resource)
+    download(community_resource, latest=True)
     return community_resource
 
 
@@ -116,6 +117,16 @@ def test_dataset_metric(fixtures):
 
 def test_resource_metric(fixtures):
     metrics_resource = Metrics.objects.get_for(fixtures['resource'])
+    metric = metrics_resource[0]
+    assert metric.level == 'daily'
+    assert metric.date == date.today().isoformat()
+    # 1 hit on permalink, 1 on url
+    assert metric.values == {'nb_hits': 2, 'nb_uniq_visitors': 2,
+        'nb_visits': 2}
+
+
+def test_community_resource_metric(fixtures):
+    metrics_resource = Metrics.objects.get_for(fixtures['community_resource'])
     metric = metrics_resource[0]
     assert metric.level == 'daily'
     assert metric.date == date.today().isoformat()

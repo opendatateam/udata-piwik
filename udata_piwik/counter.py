@@ -15,7 +15,7 @@ from werkzeug.urls import url_parse
 
 from udata.core.metrics.models import Metrics
 from udata.models import (
-    User, Organization, Reuse, Dataset, CommunityResource
+    db, User, Organization, Reuse, Dataset, CommunityResource
 )
 from udata.utils import hash_url, get_by
 
