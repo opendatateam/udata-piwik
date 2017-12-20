@@ -1,6 +1,6 @@
 # Changelog
 
-## Current (in progress)
+## 1.0.2 (2017-12-20)
 
 - Fix version number
 - Fix README on pypi
