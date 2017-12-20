@@ -2,7 +2,7 @@
 
 ## Current (in progress)
 
-- Nothing yet
+- Fix version number
 
 ## 1.0.1 (2017-12-20)
 
