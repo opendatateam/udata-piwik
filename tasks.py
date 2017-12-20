@@ -80,7 +80,7 @@ def qa(ctx):
     header(qa.__doc__)
     with ctx.cd(ROOT):
         info('Python Static Analysis')
-        flake8_results = ctx.run('flake8 udata_ckan', pty=True, warn=True)
+        flake8_results = ctx.run('flake8 udata_piwik', pty=True, warn=True)
         if flake8_results.failed:
             error('There is some lints to fix')
         else:
