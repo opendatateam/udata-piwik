@@ -47,13 +47,12 @@ PIWIK_ANALYZE_TIMEOUT = 60 * 5  # in seconds
 
 ## Testing on local env
 
-```
+```shell
 $ docker-compose up
 $ pip install -r requirements/test.pip
 $ pytest
 ```
 
-[udata-piwik-docker]: https://github.com/opendatateam/udata-piwik-docker
 [circleci-url]: https://circleci.com/gh/opendatateam/udata-piwik
 [circleci-badge]: https://circleci.com/gh/opendatateam/udata-piwik.svg?style=shield
 [gitter-badge]: https://badges.gitter.im/Join%20Chat.svg
