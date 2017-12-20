@@ -3,6 +3,7 @@
 ## Current (in progress)
 
 - Fix version number
+- Fix README on pypi
 
 ## 1.0.1 (2017-12-20)
 
