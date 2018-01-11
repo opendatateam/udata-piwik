@@ -115,6 +115,11 @@ setup(
     extras_require={
         'test': tests_require,
     },
+    entry_points={
+        'udata.commands': [
+            'piwik = udata_piwik.commands:piwik',
+        ],
+    },
     license='LGPL',
     zip_safe=False,
     keywords='udata piwik',

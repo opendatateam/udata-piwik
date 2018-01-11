@@ -2,7 +2,7 @@
 
 ## Current (in progress)
 
-- Nothing yet
+- Switch to `flask-cli` and endpoint-based commands (requires `udata>=1.3`)
 
 ## 1.0.2 (2017-12-20)
 
