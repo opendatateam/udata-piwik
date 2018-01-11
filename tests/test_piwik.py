@@ -13,7 +13,7 @@ from udata.core.post.factories import PostFactory
 from udata.core.reuse.factories import ReuseFactory
 from udata.core.user.factories import UserFactory
 
-from udata_piwik.commands import fill
+from udata_piwik.counter import counter
 
 from .client import visit, has_data, reset, download
 
@@ -77,7 +77,7 @@ def fixtures(clean_db, reset_piwik, dataset_resource, organization,
              user, reuse, post, community_resource):
     # wait for Piwik to be populated
     assert has_data()
-    fill()
+    counter.count_for(date.today())
     dataset, resource = dataset_resource
     return {
         'dataset': dataset,
