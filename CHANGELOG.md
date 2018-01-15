@@ -2,7 +2,7 @@
 
 ## Current (in progress)
 
-- Switch to `flask-cli` and endpoint-based commands (requires `udata>=1.3`)
+- Switch to `flask-cli` and endpoint-based commands (requires `udata>=1.3`) [#33](https://github.com/opendatateam/udata-piwik/pull/33)
 
 ## 1.0.2 (2017-12-20)
 
