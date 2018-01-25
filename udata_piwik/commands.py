@@ -56,4 +56,4 @@ def fill(start, end):
         counter.count_for(current_date)
         current_date += timedelta(days=1)
 
-    success('Loaded all metrics on the period')
+    success('Loaded all metrics for the period')

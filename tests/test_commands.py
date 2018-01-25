@@ -17,7 +17,7 @@ def cmd(mocker, app):
 
     # Mock counter to speedup test as it is already tested elsewhere
     mock_runner.counter = mocker.patch('udata_piwik.commands.counter')
-    # Avoid to instanciate another app and reuse the app fixture
+    # Avoid instanciating another app and reuse the app fixture
     mocker.patch.object(cli, 'create_app', return_value=app)
     return mock_runner
 
