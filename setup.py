@@ -102,7 +102,7 @@ tests_require = pip('test.pip')
 
 setup(
     name='udata-piwik',
-    version='1.0.3.dev',
+    version='1.1.0.dev',
     description='Piwik support for uData',
     long_description=long_description,
     url='https://github.com/opendatateam/udata-piwik',
@@ -114,6 +114,11 @@ setup(
     tests_require=tests_require,
     extras_require={
         'test': tests_require,
+    },
+    entry_points={
+        'udata.commands': [
+            'piwik = udata_piwik.commands:piwik',
+        ],
     },
     license='LGPL',
     zip_safe=False,

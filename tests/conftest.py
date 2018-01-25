@@ -16,6 +16,7 @@ MODULES = ['core.dataset', 'core.organization', 'core.user', 'core.reuse',
 
 
 class PiwikSettings(Testing):
+    PLUGINS = ['piwik']
     PIWIK_ID = 1
     PIWIK_URL = os.environ.get('PIWIK_URL', 'localhost:8080')
     PIWIK_AUTH = 'eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'
@@ -31,7 +32,6 @@ class PiwikSettings(Testing):
 
 @pytest.fixture(scope='module')  # noqa
 def app():
-    reload(sys).setdefaultencoding('ascii')
     app = create_app(settings.Defaults, override=PiwikSettings)
     frontend.init_app(app, MODULES)
     return app
