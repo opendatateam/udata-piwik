@@ -2,8 +2,11 @@
 from __future__ import unicode_literals
 
 import pytest
+
 from datetime import date
 
+from udata import frontend, settings
+from udata.app import create_app
 from udata.core.metrics.models import Metrics
 from udata.core.dataset.factories import (
     DatasetFactory, ResourceFactory, CommunityResourceFactory
@@ -13,9 +16,27 @@ from udata.core.post.factories import PostFactory
 from udata.core.reuse.factories import ReuseFactory
 from udata.core.user.factories import UserFactory
 
+from udata.tests.plugin import drop_db
+
 from udata_piwik.counter import counter
 
+from .conftest import PiwikSettings
 from .client import visit, has_data, reset, download
+
+
+MODULES = ['core.dataset', 'core.organization', 'core.user', 'core.reuse',
+           'core.discussions', 'core.post']
+
+
+@pytest.fixture(scope='module')  # noqa
+def app(request):
+    app = create_app(settings.Defaults, override=PiwikSettings)
+    with app.app_context():
+        drop_db(app)
+    frontend.init_app(app, MODULES)
+    yield app
+    with app.app_context():
+        drop_db(app)
 
 
 @pytest.fixture(scope='module')
@@ -73,7 +94,7 @@ def reset_piwik():
 
 
 @pytest.fixture(scope='module')
-def fixtures(clean_db, reset_piwik, dataset_resource, organization,
+def fixtures(app, reset_piwik, dataset_resource, organization,
              user, reuse, post, community_resource):
     # wait for Piwik to be populated
     assert has_data()
