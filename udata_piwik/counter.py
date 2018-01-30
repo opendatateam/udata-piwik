@@ -94,7 +94,7 @@ class Counter(object):
             for model in Organization, Reuse, User:
                 try:
                     model.objects.update(**commands)
-                except:
+                except Exception:
                     log.exception('Unable to clean %s', model.__name__)
             for dataset in Dataset.objects:
                 dcommands = commands.copy()
@@ -105,7 +105,7 @@ class Counter(object):
                     })
                 try:
                     dataset.update(**dcommands)
-                except:
+                except Exception:
                     log.exception('Unable to clear dataset %s', dataset.id)
 
         commands = dict(('unset__values__{0}'.format(k), '1') for k in KEYS)
@@ -162,7 +162,7 @@ class Counter(object):
                     handler(row, day, **kwargs)
             except (NotFound, RouteNotFound):
                 pass
-            except:
+            except Exception:
                 log.exception('Unable to count page views for %s', row['url'])
         if 'subtable' in row:
             for subrow in row['subtable']:
@@ -211,7 +211,7 @@ class Counter(object):
                     resource.metrics[metric.name] = metric.value
                     resource.save()
 
-            except:
+            except Exception:
                 log.exception('Unable to count download for %s', row['url'])
         if 'subtable' in row:
             for subrow in row['subtable']:
@@ -228,7 +228,7 @@ def on_dataset_display(data, day, dataset, **kwargs):
         if is_today(day):
             try:
                 dataset.save()
-            except:
+            except Exception:
                 log.exception('Unable to save dataset %s', dataset.id)
         DatasetViews(dataset).compute()
         if dataset.organization:
@@ -243,7 +243,7 @@ def on_reuse_display(data, day, reuse, **kwargs):
         if is_today(day):
             try:
                 reuse.save()
-            except:
+            except Exception:
                 log.exception('Unable to save reuse %s', reuse.id)
         ReuseViews(reuse).compute()
         if reuse.organization:
@@ -258,7 +258,7 @@ def on_org_display(data, day, org, **kwargs):
         if is_today(day):
             try:
                 org.save()
-            except:
+            except Exception:
                 log.exception('Unable to save organization %s', org.id)
         OrganizationViews(org).compute()
 
@@ -270,6 +270,6 @@ def on_user_display(data, day, user, **kwargs):
         if is_today(day):
             try:
                 user.save()
-            except:
+            except Exception:
                 log.exception('Unable to save user %s', user.id)
         UserViews(user).compute()
