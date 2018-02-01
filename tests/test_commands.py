@@ -5,20 +5,17 @@ import pytest
 
 from datetime import date, timedelta
 
-from click.testing import CliRunner
-from udata.commands import cli
+
+pytestmark = pytest.mark.options(plugins=['piwik'])
 
 
 @pytest.fixture
-def cmd(mocker, app):
+def cmd(mocker, cli):
     def mock_runner(args):
-        runner = CliRunner()
-        return runner.invoke(cli, ['piwik'] + args.split())
+        return cli('piwik', *args.split())
 
     # Mock counter to speedup test as it is already tested elsewhere
     mock_runner.counter = mocker.patch('udata_piwik.commands.counter')
-    # Avoid instanciating another app and reuse the app fixture
-    mocker.patch.object(cli, 'create_app', return_value=app)
     return mock_runner
 
 
