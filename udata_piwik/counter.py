@@ -168,49 +168,64 @@ class Counter(object):
             for subrow in row['subtable']:
                 self.handle_views(subrow, day)
 
+    def get_downloaded_object(self, hashed_url, resource_id=None):
+        if resource_id:
+            try:
+                data = Dataset.objects.get(resources__id=resource_id)
+                resource = get_by(data.resources, 'id', uuid.UUID(resource_id))
+            except Dataset.DoesNotExist:
+                try:
+                    data = CommunityResource.objects.get(id=resource_id)
+                    resource = data
+                except CommunityResource.DoesNotExist:
+                    raise Exception('No object found for resource_id %s' %
+                                    resource_id)
+        else:
+            try:
+                data = Dataset.objects.get(resources__urlhash=hashed_url)
+                resource = get_by(data.resources, 'urlhash', hashed_url)
+            except Dataset.DoesNotExist:
+                try:
+                    data = CommunityResource.objects.get(urlhash=hashed_url)
+                    resource = data
+                except CommunityResource.DoesNotExist:
+                    raise Exception('No object found for urlhash %s' %
+                                    hashed_url)
+
+        return data, resource
+
+    def handle_download(self, data, resource, day, row):
+        if isinstance(data, Dataset):
+            dataset = data
+            log.debug('Found resource download: %s', resource.url)
+            self.count(resource, day, row)
+            metric = ResourceViews(resource)
+            metric.compute()
+            # Use the MongoDB positionnal operator ($)
+            cmd = 'set__resources__S__metrics__{0}'.format(metric.name)
+            qs = Dataset.objects(id=dataset.id,
+                                 resources__id=resource.id)
+            qs.update(**{cmd: metric.value})
+            if dataset.organization:
+                OrgResourcesDownloads(dataset.organization).compute()
+        elif isinstance(data, CommunityResource):
+            log.debug('Found community resource download: %s',
+                      resource.url)
+            self.count(resource, day, row)
+            metric = CommunityResourceViews(resource)
+            metric.compute()
+            resource.metrics[metric.name] = metric.value
+            resource.save()
+
     def handle_downloads(self, row, day):
         if 'url' in row:
             try:
                 hashed_url = hash_url(row['url'])
                 last_url_match = re.match(LATEST_URL_REGEX, row['url'])
                 resource_id = last_url_match and last_url_match.group(1)
-                qs_comres = CommunityResource.objects
-                qs_res = Dataset.objects(
-                    db.Q(resources__urlhash=hashed_url) |
-                    db.Q(resources__id=resource_id)
-                )
-                qs_comres = CommunityResource.objects(
-                    db.Q(urlhash=hashed_url) |
-                    db.Q(id=resource_id)
-                )
-                data = qs_res.first() or qs_comres.first()
-                if isinstance(data, Dataset):
-                    dataset = data
-                    resource = (
-                        get_by(dataset.resources, 'urlhash', hashed_url) or
-                        get_by(dataset.resources, 'id', uuid.UUID(resource_id))
-                    )
-                    log.debug('Found resource download: %s', resource.url)
-                    self.count(resource, day, row)
-                    metric = ResourceViews(resource)
-                    metric.compute()
-                    # Use the MongoDB positionnal operator ($)
-                    cmd = 'set__resources__S__metrics__{0}'.format(metric.name)
-                    qs = Dataset.objects(id=dataset.id,
-                                         resources__id=resource.id)
-                    qs.update(**{cmd: metric.value})
-                    if dataset.organization:
-                        OrgResourcesDownloads(dataset.organization).compute()
-                elif isinstance(data, CommunityResource):
-                    resource = data
-                    log.debug('Found community resource download: %s',
-                              resource.url)
-                    self.count(resource, day, row)
-                    metric = CommunityResourceViews(resource)
-                    metric.compute()
-                    resource.metrics[metric.name] = metric.value
-                    resource.save()
-
+                data, resource = self.get_downloaded_object(
+                    hashed_url, resource_id=resource_id)
+                self.handle_download(data, resource, day, row)
             except Exception:
                 log.exception('Unable to count download for %s', row['url'])
         if 'subtable' in row:
