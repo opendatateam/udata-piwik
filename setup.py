@@ -119,6 +119,9 @@ setup(
         'udata.commands': [
             'piwik = udata_piwik.commands:piwik',
         ],
+        'udata.tasks': [
+            'piwik = udata_piwik.tasks',
+        ],
     },
     license='LGPL',
     zip_safe=False,

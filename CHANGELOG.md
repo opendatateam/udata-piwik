@@ -4,6 +4,7 @@
 
 - Refactor `counter.handle_downloads` - fix [#1421](https://github.com/opendatateam/udata/issues/1421)
 - Switch to `flask-cli` and endpoint-based commands (requires `udata>=1.3`) [#33](https://github.com/opendatateam/udata-piwik/pull/33)
+- Expose the new `udata.tasks` endpoint [#39](https://github.com/opendatateam/udata-piwik/pull/39)
 
 ## 1.0.2 (2017-12-20)
 
