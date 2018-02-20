@@ -122,6 +122,9 @@ setup(
         'udata.tasks': [
             'piwik = udata_piwik.tasks',
         ],
+        'udata.views': [
+            'piwik = udata_piwik.views',
+        ],
     },
     license='LGPL',
     zip_safe=False,
