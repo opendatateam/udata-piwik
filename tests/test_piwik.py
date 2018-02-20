@@ -25,7 +25,7 @@ from .client import visit, has_data, reset, download
 
 
 MODULES = ['core.dataset', 'core.organization', 'core.user', 'core.reuse',
-           'core.discussions', 'core.post']
+           'core.post']
 
 
 @pytest.fixture(scope='module')  # noqa
