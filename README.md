@@ -45,6 +45,15 @@ PIWIK_TRACK_TIMEOUT = 60  # in seconds
 PIWIK_ANALYZE_TIMEOUT = 60 * 5  # in seconds
 ```
 
+### Optional configuration
+
+```python
+# Content tracking options. Default: None
+#   - 'all': track all impressions
+#   - 'visible': track impressions of visible items only (default refresh: 750 ms)
+PIWIK_CONTENT_TRACKING = 'visible'
+```
+
 ## Testing on local env
 
 ```shell
