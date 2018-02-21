@@ -80,6 +80,40 @@ jobs:
             - dist
             - venv
 
+  dist:
+    docker:
+      - image: udata/circleci
+    environment:
+       BASH_ENV: /root/.bashrc
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: Build a distributable package
+          command: |
+            source venv/bin/activate
+            # Check long description renders properly
+            python setup.py check -r -s
+            # Build a wheel release
+            if [[ $CIRCLE_TAG ]]; then
+                # This is a tagged release
+                inv pydist
+            elif [[ "$CIRCLE_BRANCH" == feature/* ]]; then
+                # This is a feature branch
+                inv pydist -b $CIRCLE_BUILD_NUM+${CIRCLE_BRANCH#*/}
+            else
+                # This is a simple development build
+                inv pydist -b $CIRCLE_BUILD_NUM
+            fi
+      - store_artifacts:
+          path: dist
+      - persist_to_workspace:
+          root: .
+          paths:
+              - dist
+
+
   publish:
     docker:
       - image: udata/circleci
@@ -110,6 +144,12 @@ workflows:
   build:
     jobs:
       - build:
+          filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*/
+      - dist:
+          requires:
+            - build
           filters:
             tags:
               only: /v[0-9]+(\.[0-9]+)*/
