@@ -102,7 +102,7 @@ tests_require = pip('test.pip')
 
 setup(
     name='udata-piwik',
-    version='1.1.0',
+    version='1.1.1.dev',
     description='Piwik support for uData',
     long_description=long_description,
     url='https://github.com/opendatateam/udata-piwik',

@@ -1,5 +1,9 @@
 # Changelog
 
+## Current (in progress)
+
+- Nothing yet
+
 ## 1.1.0 (2018-03-13)
 
 - Refactor `counter.handle_downloads` - fix [#1421](https://github.com/opendatateam/udata/issues/1421)
