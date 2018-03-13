@@ -6,6 +6,7 @@
 - Switch to `flask-cli` and endpoint-based commands (requires `udata>=1.3`) [#33](https://github.com/opendatateam/udata-piwik/pull/33)
 - Expose the new `udata.tasks` endpoint [#39](https://github.com/opendatateam/udata-piwik/pull/39)
 - Expose the new `udata.views` endpoint [#41](https://github.com/opendatateam/udata-piwik/pull/41)
+- Add content tracking options in configuration paramaters [#42](://github.com/opendatateam/udata-piwik/pull/42)
 
 ## 1.0.2 (2017-12-20)
 

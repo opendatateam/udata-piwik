@@ -28,6 +28,13 @@
     });
   }
   {% endif %}
+
+  {% if config.PIWIK_CONTENT_TRACKING == 'all' %}
+    _paq.push(['trackAllContentImpressions']);
+  {% elif config.PIWIK_CONTENT_TRACKING == 'visible' %}
+    _paq.push(['trackVisibleContentImpressions']);
+  {% endif  %}
+
 </script>
 <noscript><p><img src="http://{{config.PIWIK_URL}}/piwik.php?idsite={{config.PIWIK_ID}}" style="border:0;" alt="" /></p></noscript>
 {% endif %}
