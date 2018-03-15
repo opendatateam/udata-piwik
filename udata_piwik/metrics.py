@@ -245,6 +245,6 @@ def clear_metrics_for_day(day):
             except Exception:
                 log.exception('Unable to clear dataset %s', dataset.id)
 
-    commands = dict(('unset__values__{0}'.format(k), '1') for k in KEYS)
+    commands = dict(('unset__values__{0}'.format(k), 1) for k in KEYS)
     metrics = Metrics.objects(level='daily', date=day)
     return metrics.update(upsert=False, **commands)
