@@ -1,5 +1,9 @@
 # Changelog
 
+## Current (in progress)
+
+- Nothing yet
+
 ## 1.1.1 (2018-03-15)
 
 - Handle multiple resources for same url [#49](https://github.com/opendatateam/udata-piwik/pull/49)
