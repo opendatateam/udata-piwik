@@ -23,50 +23,95 @@ class DailyDownloadCounter(object):
     '''Perform reverse routing and count for daily stats'''
     def __init__(self, day):
         self.day = day
+        self.rows = []
+        self.resources = []
+        self.community_resources = []
 
     def count(self):
-        self.count_downloads()
+        self.populate_rows()
+        self.detect_download_objects()
+        self.handle_resources_downloads()
+        self.handle_community_resources_downloads()
 
-    def count_downloads(self):
+    def get_rows(self, rows):
+        for row in rows:
+            if 'url' in row:
+                self.rows.append(row)
+            if 'subtable' in row:
+                for subrow in row['subtable']:
+                    self.rows.append(subrow)
+
+    def populate_rows(self):
         params = {
             'period': 'day',
             'date': self.day,
             'expanded': 1
         }
-        for row in analyze('Actions.getDownloads', **params):
-            self.handle_downloads(row)
-        for row in analyze('Actions.getOutlinks', **params):
-            self.handle_downloads(row)
+        self.get_rows(analyze('Actions.getDownloads', **params))
+        self.get_rows(analyze('Actions.getOutlinks', **params))
 
-    def get_downloaded_object(self, hashed_url, resource_id=None):
-        if resource_id:
+    def detect_by_resource_id(self, resource_id, row):
+        try:
+            dataset = Dataset.objects.get(resources__id=resource_id)
+            resource = get_by(dataset.resources, 'id', uuid.UUID(resource_id))
+            self.resources.append({
+                'dataset': dataset,
+                'resource': resource,
+                'data': row,
+            })
+        except Dataset.DoesNotExist:
             try:
-                data = Dataset.objects.get(resources__id=resource_id)
-                resource = get_by(data.resources, 'id', uuid.UUID(resource_id))
-            except Dataset.DoesNotExist:
-                try:
-                    data = CommunityResource.objects.get(id=resource_id)
-                    resource = data
-                except CommunityResource.DoesNotExist:
-                    raise Exception('No object found for resource_id %s' %
-                                    resource_id)
-        else:
-            try:
-                data = Dataset.objects.get(resources__urlhash=hashed_url)
-                resource = get_by(data.resources, 'urlhash', hashed_url)
-            except Dataset.DoesNotExist:
-                try:
-                    data = CommunityResource.objects.get(urlhash=hashed_url)
-                    resource = data
-                except CommunityResource.DoesNotExist:
-                    raise Exception('No object found for urlhash %s' %
-                                    hashed_url)
+                resource = CommunityResource.objects.get(id=resource_id)
+                self.community_resources.append({
+                    'resource': resource,
+                    'data': row,
+                })
+            except CommunityResource.DoesNotExist:
+                raise Exception('No object found for resource_id %s' %
+                                resource_id)
 
-        return data, resource
+    def detect_by_hashed_url(self, hashed_url, row):
+        found = False
+        try:
+            datasets = Dataset.objects.filter(resources__urlhash=hashed_url)
+            for dataset in datasets:
+                resource = get_by(dataset.resources, 'urlhash', hashed_url)
+                self.resources.append({
+                    'dataset': dataset,
+                    'resource': resource,
+                    'data': row,
+                })
+                found = True
+        except Dataset.DoesNotExist:
+            pass
+        try:
+            resources = CommunityResource.objects.filter(urlhash=hashed_url)
+            for resource in resources:
+                self.community_resources.append({
+                    'resource': resource,
+                    'data': row,
+                })
+                found = True
+        except CommunityResource.DoesNotExist:
+            pass
+        if not found:
+            raise Exception('No object found for urlhash %s' % hashed_url)
 
-    def handle_download(self, data, resource, row):
-        if isinstance(data, Dataset):
-            dataset = data
+    def detect_download_objects(self):
+        for row in self.rows:
+            last_url_match = re.match(LATEST_URL_REGEX, row['url'])
+            resource_id = last_url_match and last_url_match.group(1)
+            if resource_id:
+                self.detect_by_resource_id(resource_id, row)
+            else:
+                hashed_url = hash_url(row['url'])
+                self.detect_by_hashed_url(hashed_url, row)
+
+    def handle_resources_downloads(self):
+        for item in self.resources:
+            row = item['data']
+            dataset = item['dataset']
+            resource = item['resource']
             log.debug('Found resource download: %s', resource.url)
             upsert_metric_for_day(resource, self.day, row)
             metric = ResourceViews(resource)
@@ -78,7 +123,11 @@ class DailyDownloadCounter(object):
             qs.update(**{cmd: metric.value})
             if dataset.organization:
                 OrgResourcesDownloads(dataset.organization).compute()
-        elif isinstance(data, CommunityResource):
+
+    def handle_community_resources_downloads(self):
+        for item in self.community_resources:
+            row = item['data']
+            resource = item['resource']
             log.debug('Found community resource download: %s',
                       resource.url)
             upsert_metric_for_day(resource, self.day, row)
@@ -86,18 +135,3 @@ class DailyDownloadCounter(object):
             metric.compute()
             resource.metrics[metric.name] = metric.value
             resource.save()
-
-    def handle_downloads(self, row):
-        if 'url' in row:
-            try:
-                hashed_url = hash_url(row['url'])
-                last_url_match = re.match(LATEST_URL_REGEX, row['url'])
-                resource_id = last_url_match and last_url_match.group(1)
-                data, resource = self.get_downloaded_object(
-                    hashed_url, resource_id=resource_id)
-                self.handle_download(data, resource, row)
-            except Exception:
-                log.exception('Unable to count download for %s', row['url'])
-        if 'subtable' in row:
-            for subrow in row['subtable']:
-                self.handle_downloads(subrow)
