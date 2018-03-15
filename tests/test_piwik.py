@@ -53,6 +53,17 @@ def dataset_resource():
 
 
 @pytest.fixture(scope='module')
+def two_datasets_one_resource_url():
+    resource_1 = ResourceFactory(url='http://udata.world')
+    resource_2 = ResourceFactory(url='http://udata.world')
+    dataset_1 = DatasetFactory(resources=[resource_1])
+    dataset_2 = DatasetFactory(resources=[resource_2])
+    download(resource_1)
+    download(resource_2, latest=True)
+    return (dataset_1, dataset_2), (resource_1, resource_2)
+
+
+@pytest.fixture(scope='module')
 def organization():
     organization = OrganizationFactory()
     visit(organization)
@@ -95,7 +106,8 @@ def reset_piwik():
 
 @pytest.fixture(scope='module')
 def fixtures(app, reset_piwik, dataset_resource, organization,
-             user, reuse, post, community_resource):
+             user, reuse, post, community_resource,
+             two_datasets_one_resource_url):
     # wait for Piwik to be populated
     assert has_data()
     counter.count_for(date.today())
@@ -108,6 +120,7 @@ def fixtures(app, reset_piwik, dataset_resource, organization,
         'reuse': reuse,
         'post': post,
         'community_resource': community_resource,
+        'two_datasets_one_resource_url': two_datasets_one_resource_url,
     }
 
 
@@ -153,4 +166,19 @@ def test_community_resource_metric(fixtures):
     assert metric.date == date.today().isoformat()
     # 1 hit on permalink, 1 on url
     assert metric.values == {'nb_hits': 2, 'nb_uniq_visitors': 2,
+        'nb_visits': 2}
+
+
+def test_two_datasets_one_resource_url(fixtures):
+    (d1, d2), (r1, r2) = fixtures['two_datasets_one_resource_url']
+    metrics_r1 = Metrics.objects.get_for(r1)
+    assert len(metrics_r1) == 1
+    metrics_r2 = Metrics.objects.get_for(r2)
+    assert len(metrics_r2) == 1
+    # hit once by resource_1 hashed_url, never by resource_2 latest url rid
+    assert metrics_r1[0].values == {'nb_hits': 1, 'nb_uniq_visitors': 1,
+        'nb_visits': 1}
+    # hit once by resource_1 hashed_url and once by latest url resource id
+    # ideally this should be only one but impossible to tell
+    assert metrics_r2[0].values == {'nb_hits': 2, 'nb_uniq_visitors': 2,
         'nb_visits': 2}

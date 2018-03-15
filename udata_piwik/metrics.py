@@ -4,6 +4,8 @@ from __future__ import unicode_literals
 import itertools
 import logging
 
+from datetime import date
+
 from udata.core.metrics import Metric
 from udata.core.metrics.models import Metrics
 from udata.i18n import lazy_gettext as _
@@ -11,6 +13,10 @@ from udata.i18n import lazy_gettext as _
 from udata.models import (
     User, Organization, Reuse, Dataset, Resource, CommunityResource
 )
+
+from .utils import is_today
+
+KEYS = 'nb_uniq_visitors nb_hits nb_visits'.split()
 
 
 log = logging.getLogger(__name__)
@@ -183,9 +189,6 @@ class OrgReusesViews(Metric):
                           .sum('values.nb_uniq_visitors'))
 
 
-KEYS = 'nb_uniq_visitors nb_hits nb_visits'.split()
-
-
 def aggregate_datasets_daily(org, day):
     keys = ['datasets_{0}'.format(k) for k in KEYS]
     ids = [d.id for d in Dataset.objects(organization=org).only('id')]
@@ -202,3 +205,46 @@ def aggregate_reuses_daily(org, day):
                               level='daily', date=day.isoformat())
     values = [int(metrics.sum('values.{0}'.format(k))) for k in KEYS]
     Metrics.objects.update_daily(org, day, **dict(zip(keys, values)))
+
+
+def upsert_metric_for_day(obj, day, data):
+    oid = obj.id if hasattr(obj, 'id') else obj
+    if not isinstance(day, basestring):
+        day = (day or date.today()).isoformat()
+
+    if hasattr(obj, 'metrics') and day == date.today().isoformat():
+        # Update object current metrics
+        for k in KEYS:
+            obj.metrics[k] = data[k]
+
+    commands = dict(('inc__values__{0}'.format(k), data[k]) for k in KEYS)
+    metrics = Metrics.objects(object_id=oid, level='daily', date=day)
+    return metrics.update_one(upsert=True, **commands)
+
+
+def clear_metrics_for_day(day):
+    if not isinstance(day, basestring):
+        day = (day or date.today()).isoformat()
+
+    if is_today(day):
+        commands = dict(('set__metrics__{0}'.format(k), 0) for k in KEYS)
+        for model in Organization, Reuse, User:
+            try:
+                model.objects.update(**commands)
+            except Exception:
+                log.exception('Unable to clean %s', model.__name__)
+        for dataset in Dataset.objects:
+            dcommands = commands.copy()
+            for i, _r in enumerate(dataset.resources):
+                dcommands.update({
+                    'set__resources__{0}__metrics__{1}'.format(i, k): 0
+                    for k in KEYS
+                })
+            try:
+                dataset.update(**dcommands)
+            except Exception:
+                log.exception('Unable to clear dataset %s', dataset.id)
+
+    commands = dict(('unset__values__{0}'.format(k), 1) for k in KEYS)
+    metrics = Metrics.objects(level='daily', date=day)
+    return metrics.update(upsert=False, **commands)
