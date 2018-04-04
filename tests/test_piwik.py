@@ -157,6 +157,13 @@ def test_resource_metric(fixtures):
     # 1 hit on permalink, 1 on url
     assert metric.values == {'nb_hits': 2, 'nb_uniq_visitors': 2,
         'nb_visits': 2}
+    fixtures['resource'].reload()
+    assert fixtures['resource'].metrics == {
+        'nb_hits': 2,
+        'nb_uniq_visitors': 2,
+        'nb_visits': 2,
+        'views': 2,
+    }
 
 
 def test_community_resource_metric(fixtures):
