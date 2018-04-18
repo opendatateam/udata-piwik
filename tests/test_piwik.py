@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 import pytest
 
-from datetime import date
+from datetime import date, datetime, timedelta
 
 from udata import frontend, settings
 from udata.app import create_app
@@ -19,6 +19,7 @@ from udata.core.user.factories import UserFactory
 from udata.tests.plugin import drop_db
 
 from udata_piwik.counter import counter
+from udata_piwik.metrics import upsert_metric_for_day
 
 from .conftest import PiwikSettings
 from .client import visit, has_data, reset, download
@@ -49,6 +50,21 @@ def dataset_resource():
     # 1 download on url, 1 on latest url
     download(resource)
     download(resource, latest=True)
+    return dataset, resource
+
+
+@pytest.fixture(scope='module')
+def dataset_resource_w_previous_data():
+    resource = ResourceFactory()
+    dataset = DatasetFactory(resources=[resource])
+    day = datetime.now() - timedelta(days=1)
+    data = {'nb_uniq_visitors': 5, 'nb_hits': 5, 'nb_visits': 5}
+    upsert_metric_for_day(resource, day, data)
+    day = datetime.now() - timedelta(days=2)
+    data = {'nb_uniq_visitors': 10, 'nb_hits': 10, 'nb_visits': 10}
+    upsert_metric_for_day(resource, day, data)
+    visit(dataset)
+    download(resource)
     return dataset, resource
 
 
@@ -107,11 +123,12 @@ def reset_piwik():
 @pytest.fixture(scope='module')
 def fixtures(app, reset_piwik, dataset_resource, organization,
              user, reuse, post, community_resource,
-             two_datasets_one_resource_url):
+             two_datasets_one_resource_url, dataset_resource_w_previous_data):
     # wait for Piwik to be populated
     assert has_data()
     counter.count_for(date.today())
     dataset, resource = dataset_resource
+    d_w_previous_data, r_w_previous_data = dataset_resource_w_previous_data
     return {
         'dataset': dataset,
         'organization': organization,
@@ -121,6 +138,8 @@ def fixtures(app, reset_piwik, dataset_resource, organization,
         'post': post,
         'community_resource': community_resource,
         'two_datasets_one_resource_url': two_datasets_one_resource_url,
+        'dataset_w_previous_data': d_w_previous_data,
+        'resource_w_previous_data': r_w_previous_data,
     }
 
 
@@ -147,6 +166,8 @@ def test_dataset_metric(fixtures):
     assert metric.date == date.today().isoformat()
     assert metric.values == {'nb_hits': 2, 'nb_uniq_visitors': 1,
         'nb_visits': 1}
+    fixtures['dataset'].reload()
+    assert fixtures['dataset'].metrics['views'] == 1
 
 
 def test_resource_metric(fixtures):
@@ -157,13 +178,15 @@ def test_resource_metric(fixtures):
     # 1 hit on permalink, 1 on url
     assert metric.values == {'nb_hits': 2, 'nb_uniq_visitors': 2,
         'nb_visits': 2}
-    fixtures['resource'].reload()
-    assert fixtures['resource'].metrics == {
-        'nb_hits': 2,
-        'nb_uniq_visitors': 2,
-        'nb_visits': 2,
-        'views': 2,
-    }
+    fixtures['dataset'].reload()
+    resource = fixtures['dataset'].resources[0]
+    assert resource.metrics == {'views': 2}
+
+
+def test_resource_metric_with_previous_data(fixtures):
+    fixtures['dataset_w_previous_data'].reload()
+    resource = fixtures['dataset_w_previous_data'].resources[0]
+    assert resource.metrics == {'views': 16}
 
 
 def test_community_resource_metric(fixtures):
@@ -174,6 +197,8 @@ def test_community_resource_metric(fixtures):
     # 1 hit on permalink, 1 on url
     assert metric.values == {'nb_hits': 2, 'nb_uniq_visitors': 2,
         'nb_visits': 2}
+    fixtures['community_resource'].reload()
+    assert fixtures['community_resource'].metrics['views'] == 2
 
 
 def test_two_datasets_one_resource_url(fixtures):
