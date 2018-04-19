@@ -65,6 +65,7 @@ def dataset_resource_w_previous_data():
     upsert_metric_for_day(resource, day, data)
     visit(dataset)
     download(resource)
+    download(resource, latest=True)
     return dataset, resource
 
 
@@ -186,7 +187,7 @@ def test_resource_metric(fixtures):
 def test_resource_metric_with_previous_data(fixtures):
     fixtures['dataset_w_previous_data'].reload()
     resource = fixtures['dataset_w_previous_data'].resources[0]
-    assert resource.metrics == {'views': 16}
+    assert resource.metrics == {'views': 17}
 
 
 def test_community_resource_metric(fixtures):
