@@ -72,7 +72,7 @@ class OrgResourcesDownloads(Metric):
 
     def get_value(self):
         ids = itertools.chain(*[
-            [r.id for r in d.resources or []] for d in
+            [getattr(r, 'id', None) for r in d.resources or []] for d in
             (Dataset.objects(organization=self.target).only('resources') or [])
         ])
         return int(Metrics.objects(object_id__in=ids, level='daily')
