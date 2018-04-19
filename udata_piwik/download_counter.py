@@ -67,8 +67,7 @@ class DailyDownloadCounter(object):
                     'data': row,
                 })
             except CommunityResource.DoesNotExist:
-                raise Exception('No object found for resource_id %s' %
-                                resource_id)
+                log.error('No object found for resource_id %s' % resource_id)
 
     def detect_by_hashed_url(self, hashed_url, row):
         found = False
@@ -95,10 +94,12 @@ class DailyDownloadCounter(object):
         except CommunityResource.DoesNotExist:
             pass
         if not found:
-            raise Exception('No object found for urlhash %s' % hashed_url)
+            log.error('No object found for urlhash %s' % hashed_url)
 
     def detect_download_objects(self):
         for row in self.rows:
+            if 'url' not in row:
+                continue
             last_url_match = re.match(LATEST_URL_REGEX, row['url'])
             resource_id = last_url_match and last_url_match.group(1)
             if resource_id:
