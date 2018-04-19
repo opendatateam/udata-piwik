@@ -3,6 +3,7 @@
 ## Current (in progress)
 
 - Handle multiple resources for same url [#49](https://github.com/opendatateam/udata-piwik/pull/49)
+- Simpler and more reliable metrics computation [#54](https://github.com/opendatateam/udata-piwik/pull/54)
 
 ## 1.1.0 (2018-03-13)
 
