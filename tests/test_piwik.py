@@ -42,7 +42,7 @@ def app(request):
 
 @pytest.fixture(scope='module')
 def dataset_resource():
-    resource = ResourceFactory()
+    resource = ResourceFactory(url='http://schéma.org')
     dataset = DatasetFactory(resources=[resource])
     # 2x visit
     visit(dataset)
