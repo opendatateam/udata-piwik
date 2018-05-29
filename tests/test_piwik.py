@@ -35,13 +35,13 @@ def app(request):
     with app.app_context():
         drop_db(app)
     frontend.init_app(app, MODULES)
-    yield app
     with app.app_context():
+        yield app
         drop_db(app)
 
 
 @pytest.fixture(scope='module')
-def dataset_resource():
+def dataset_resource(app):
     resource = ResourceFactory(url='http://schéma.org')
     dataset = DatasetFactory(resources=[resource])
     # 2x visit
@@ -54,7 +54,7 @@ def dataset_resource():
 
 
 @pytest.fixture(scope='module')
-def dataset_resource_w_previous_data():
+def dataset_resource_w_previous_data(app):
     resource = ResourceFactory()
     dataset = DatasetFactory(resources=[resource])
     day = datetime.now() - timedelta(days=1)
@@ -70,7 +70,7 @@ def dataset_resource_w_previous_data():
 
 
 @pytest.fixture(scope='module')
-def two_datasets_one_resource_url():
+def two_datasets_one_resource_url(app):
     resource_1 = ResourceFactory(url='http://udata.world')
     resource_2 = ResourceFactory(url='http://udata.world')
     dataset_1 = DatasetFactory(resources=[resource_1])
@@ -81,35 +81,35 @@ def two_datasets_one_resource_url():
 
 
 @pytest.fixture(scope='module')
-def organization():
+def organization(app):
     organization = OrganizationFactory()
     visit(organization)
     return organization
 
 
 @pytest.fixture(scope='module')
-def post():
+def post(app):
     post = PostFactory()
     visit(post)
     return post
 
 
 @pytest.fixture(scope='module')
-def reuse():
+def reuse(app):
     reuse = ReuseFactory()
     visit(reuse)
     return reuse
 
 
 @pytest.fixture(scope='module')
-def user():
+def user(app):
     user = UserFactory()
     visit(user)
     return user
 
 
 @pytest.fixture(scope='module')
-def community_resource():
+def community_resource(app):
     community_resource = CommunityResourceFactory()
     download(community_resource)
     download(community_resource, latest=True)
