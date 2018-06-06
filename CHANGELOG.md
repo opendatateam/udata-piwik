@@ -1,5 +1,9 @@
 # Changelog
 
+## Current (in progress)
+
+- Nothing yet
+
 ## 1.2.0 (2018-06-06)
 
 - Simpler and more reliable metrics computation [#54](https://github.com/opendatateam/udata-piwik/pull/54)
