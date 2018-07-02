@@ -2,7 +2,7 @@
 
 ## Current (in progress)
 
-- Nothing yet
+- Migrate to python3 🐍 [#68](https://github.com/opendatateam/udata-piwik/pull/68)
 
 ## 1.2.0 (2018-06-06)
 
