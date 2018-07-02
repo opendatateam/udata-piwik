@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 import io
 import os
 import re
@@ -102,7 +101,7 @@ tests_require = pip('test.pip')
 
 setup(
     name='udata-piwik',
-    version='1.2.1.dev',
+    version='2.0.0.dev',
     description='Piwik support for uData',
     long_description=long_description,
     url='https://github.com/opendatateam/udata-piwik',
@@ -137,8 +136,8 @@ setup(
         'Intended Audience :: Developers',
         'Topic :: System :: Software Distribution',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.6',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
 )

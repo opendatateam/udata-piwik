@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 from datetime import date
 
 from flask import _app_ctx_stack
@@ -39,7 +36,7 @@ def route_from(url, method=None):
 
 def is_today(day):
     today = date.today()
-    if isinstance(day, basestring):
+    if isinstance(day, str):
         return day == today.isoformat()
     else:
         return day == today

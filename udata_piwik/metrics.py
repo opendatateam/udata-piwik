@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 import itertools
 import logging
 
@@ -111,7 +108,7 @@ def aggregate_reuses_daily(org, day):
 
 def upsert_metric_for_day(obj, day, data):
     oid = obj.id if hasattr(obj, 'id') else obj
-    if not isinstance(day, basestring):
+    if not isinstance(day, str):
         day = (day or date.today()).isoformat()
     commands = dict(('inc__values__{0}'.format(k), data[k]) for k in KEYS)
     metrics = Metrics.objects(object_id=oid, level='daily', date=day)
@@ -119,7 +116,7 @@ def upsert_metric_for_day(obj, day, data):
 
 
 def clear_metrics_for_day(day):
-    if not isinstance(day, basestring):
+    if not isinstance(day, str):
         day = (day or date.today()).isoformat()
     commands = dict(('unset__values__{0}'.format(k), 1) for k in KEYS)
     metrics = Metrics.objects(level='daily', date=day)
