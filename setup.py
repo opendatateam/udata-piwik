@@ -40,7 +40,7 @@ tests_require = pip('test.pip')
 
 setup(
     name='udata-piwik',
-    version='2.0.3.dev',
+    version='2.0.0.dev',
     description='Piwik support for uData',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -81,7 +81,11 @@ setup(
         'Topic :: System :: Software Distribution',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
+<<<<<<< HEAD
         'Programming Language :: Python :: 3.7',
+=======
+        'Programming Language :: Python :: 3.6',
+>>>>>>> Migrate to python3
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
 )

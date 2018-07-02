@@ -36,7 +36,7 @@ jobs:
       - run:
           name: Install python dependencies
           command: |
-            virtualenv venv
+            virtualenv -ppython3.6 venv
             source venv/bin/activate
             # Workaround to bad transitive dependencies resolution:
             # Install package first then all other dependencies
@@ -85,7 +85,11 @@ jobs:
 
   publish:
     docker:
+<<<<<<< HEAD
       - image: udata/circleci:2-alpine
+=======
+      - image: udata/circleci:py3
+>>>>>>> Migrate to python3
     steps:
       - attach_workspace:
           at: .
@@ -97,7 +101,11 @@ jobs:
 
   github:
     docker:
+<<<<<<< HEAD
       - image: udata/circleci:2-alpine
+=======
+      - image: udata/circleci:py3
+>>>>>>> Migrate to python3
     environment:
        BASH_ENV: /root/.bashrc
     steps:
