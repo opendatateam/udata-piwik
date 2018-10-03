@@ -8,7 +8,6 @@
   {% if current_user.is_authenticated %}
     _paq.push(['setUserId', '{{current_user.id}}']);
   {% endif %}
-  _paq.push(['trackPageView']);
   _paq.push(['enableLinkTracking']);
   (function() {
     var u=(("https:" == document.location.protocol) ? "https" : "http") + "://{{config.PIWIK_URL}}/";
@@ -17,7 +16,7 @@
     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0]; g.type='text/javascript';
     g.defer=true; g.async=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
   })();
-
+  
   {% if config.PIWIK_GOALS %}
   var goals = {{config.PIWIK_GOALS|to_json|safe}};
   for (var goal in goals) {
@@ -28,12 +27,24 @@
     });
   }
   {% endif %}
-
+  
   {% if config.PIWIK_CONTENT_TRACKING == 'all' %}
-    _paq.push(['trackAllContentImpressions']);
+  _paq.push(['trackAllContentImpressions']);
   {% elif config.PIWIK_CONTENT_TRACKING == 'visible' %}
-    _paq.push(['trackVisibleContentImpressions']);
-  {% endif  %}
+  _paq.push(['trackVisibleContentImpressions']);
+  {% endif %}
+  
+  {# We only enable search tracking on search pages with queries #}
+  {% if request.endpoint in ('search.index', 'datasets.list') and request.args.q%}
+  {# Global search is considered as datasets search #}
+  _paq.push(['trackSiteSearch', '{{ request.args.q }}', 'datasets', {{ datasets.total|default(0) }}]);
+  {% elif request.endpoint == 'reuses.list' and request.args.q %}
+  _paq.push(['trackSiteSearch', '{{ request.args.q }}', 'reuses', {{ reuses.total|default(0) }}]);
+  {% elif request.endpoint == 'organizations.list' and request.args.q %}
+  _paq.push(['trackSiteSearch', '{{ request.args.q }}', 'organizations', {{ organizations.total|default(0) }}]);
+  {% else %}
+  _paq.push(['trackPageView']);
+  {% endif %}
 
 </script>
 <noscript><p><img src="http://{{config.PIWIK_URL}}/piwik.php?idsite={{config.PIWIK_ID}}" style="border:0;" alt="" /></p></noscript>
