@@ -2,7 +2,7 @@
 
 ## Current (in progress)
 
-- Nothing yet
+- Advanced search tracking: display results count and categories (datasets, reuses, organizations) [#88](https://github.com/opendatateam/udata-piwik/pull/88)
 
 ## 1.2.0 (2018-06-06)
 
