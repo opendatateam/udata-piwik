@@ -4,6 +4,7 @@
 
 - Advanced search tracking: display results count and categories (datasets, reuses, organizations) [#88](https://github.com/opendatateam/udata-piwik/pull/88)
 - Lower jobs piriority to `low` [#90](https://github.com/opendatateam/udata-piwik/pull/90)
+- Depends on `udata>=1.6.1`
 
 ## 1.2.0 (2018-06-06)
 
