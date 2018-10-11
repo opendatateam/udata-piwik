@@ -1,5 +1,9 @@
 # Changelog
 
+## Current (in progress)
+
+- Nothing yet
+
 ## 1.3.0 (2018-10-11)
 
 - Advanced search tracking: display results count and categories (datasets, reuses, organizations) [#88](https://github.com/opendatateam/udata-piwik/pull/88)
