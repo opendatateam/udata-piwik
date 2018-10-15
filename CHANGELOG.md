@@ -2,7 +2,7 @@
 
 ## Current (in progress)
 
-- Nothing yet
+- Ensure JS goals handling waits for `uData` object to be present
 
 ## 1.3.0 (2018-10-11)
 
