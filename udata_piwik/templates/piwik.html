@@ -17,17 +17,6 @@
     g.defer=true; g.async=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
   })();
   
-  {% if config.PIWIK_GOALS %}
-  var goals = {{config.PIWIK_GOALS|to_json|safe}};
-  for (var goal in goals) {
-    var value = goals[goal];
-    uData.pubsub.subscribe(goal, function () {
-      uData.log.debug('Tracking goal', goal, 'with value', value);
-      _paq.push(['trackGoal', value]);
-    });
-  }
-  {% endif %}
-  
   {% if config.PIWIK_CONTENT_TRACKING == 'all' %}
   _paq.push(['trackAllContentImpressions']);
   {% elif config.PIWIK_CONTENT_TRACKING == 'visible' %}
@@ -45,6 +34,21 @@
   {% else %}
   _paq.push(['trackPageView']);
   {% endif %}
+
+  {% if config.PIWIK_GOALS %}
+  var PIWIK_GOALS = {{config.PIWIK_GOALS|to_json|safe}};
+  // Wait for uData object to be present
+  window.addEventListener("load", function() {
+    for (var goal in PIWIK_GOALS) {
+      var value = PIWIK_GOALS[goal];
+      uData.pubsub.subscribe(goal, function () {
+        uData.log.debug('Tracking goal', goal, 'with value', value);
+        _paq.push(['trackGoal', value]);
+      });
+    }
+  }, false);
+  {% endif %}
+
 
 </script>
 <noscript><p><img src="http://{{config.PIWIK_URL}}/piwik.php?idsite={{config.PIWIK_ID}}" style="border:0;" alt="" /></p></noscript>
