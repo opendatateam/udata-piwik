@@ -2,7 +2,7 @@
 
 ## Current (in progress)
 
-- Ensure JS goals handling waits for `uData` object to be present
+- Ensure JS goals handling waits for `uData` object to be present [#91](https://github.com/opendatateam/udata-piwik/pull/91)
 
 ## 1.3.0 (2018-10-11)
 
