@@ -30,21 +30,24 @@ jobs:
           command: export BASE_BRANCH=$(base_branch)
       - restore_cache:
           keys:
-          - py-cache-v0-{{ arch }}-{{ checksum "python.deps" }}
-          - py-cache-v0-{{ arch }}-{{ .Branch }}
-          - py-cache-v0-{{ arch }}-{{ .Environment.BASE_BRANCH }}
+          - py-cache-v2-{{ arch }}-{{ checksum "python.deps" }}
+          - py-cache-v2-{{ arch }}-{{ .Branch }}
+          - py-cache-v2-{{ arch }}-{{ .Environment.BASE_BRANCH }}
       - run:
           name: Install python dependencies
           command: |
             virtualenv -ppython3.6 venv
             source venv/bin/activate
+            # Workaround to bad transitive dependencies resolution:
+            # Install package first then all other dependencies
+            pip install -e . || pip install -e .
             pip install -r requirements/develop.pip || pip install -r requirements/develop.pip
       - save_cache:
-          key: py-cache-v0-{{ arch }}-{{ checksum "python.deps" }}
+          key: py-cache-v2-{{ arch }}-{{ checksum "python.deps" }}
           paths:
           - venv
       - save_cache:
-          key: py-cache-v0-{{ arch }}-{{ .Branch }}
+          key: py-cache-v2-{{ arch }}-{{ .Branch }}
           paths:
           - venv
       - run:

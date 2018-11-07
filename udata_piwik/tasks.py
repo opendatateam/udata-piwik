@@ -16,7 +16,7 @@ from .counter import counter
 log = logging.getLogger(__name__)
 
 
-@job('piwik-current-metrics')
+@job('piwik-current-metrics', route='low.piwik')
 def piwik_current_metrics(self):
     '''Fetch piwik metrics for the current day'''
     day = date.today()
@@ -26,7 +26,7 @@ def piwik_current_metrics(self):
     counter.count_for(day)
 
 
-@job('piwik-yesterday-metrics')
+@job('piwik-yesterday-metrics', route='low.piwik')
 def piwik_yesterday_metrics(self):
     '''Bump piwik daily metrics for yesterday'''
     day = date.today() - timedelta(days=1)
@@ -36,14 +36,14 @@ def piwik_yesterday_metrics(self):
     counter.count_for(day)
 
 
-@connect(on_api_call)
+@connect(on_api_call, route='low.piwik')
 def piwik_track_api(url, **params):
     '''Track an API request into Piwik.'''
     log.debug('Sending to piwik: {url}'.format(url=url))
     track(url, **params)
 
 
-@connect(on_dataset_published)
+@connect(on_dataset_published, route='low.piwik')
 def piwik_track_dataset_published(url, **params):
     '''Track a dataset publication into Piwik.'''
     log.debug('Sending to piwik: {url}'.format(url=url))
@@ -55,7 +55,7 @@ def piwik_track_dataset_published(url, **params):
     track(url, **params)
 
 
-@connect(on_reuse_published)
+@connect(on_reuse_published, route='low.piwik')
 def piwik_track_reuse_published(url, **params):
     '''Track a reuse publication into Piwik.'''
     log.debug('Sending to piwik: {url}'.format(url=url))
@@ -67,7 +67,7 @@ def piwik_track_reuse_published(url, **params):
     track(url, **params)
 
 
-@connect(on_new_follow)
+@connect(on_new_follow, route='low.piwik')
 def piwik_track_new_follow(url, **params):
     '''Track a new follow into Piwik.'''
     log.debug('Sending to piwik: {url}'.format(url=url))

@@ -4,6 +4,16 @@
 
 - Migrate to python3 🐍 [#68](https://github.com/opendatateam/udata-piwik/pull/68)
 
+## 1.3.1 (2018-11-05)
+
+- Ensure JS goals handling waits for `uData` object to be present [#91](https://github.com/opendatateam/udata-piwik/pull/91)
+
+## 1.3.0 (2018-10-11)
+
+- Advanced search tracking: display results count and categories (datasets, reuses, organizations) [#88](https://github.com/opendatateam/udata-piwik/pull/88)
+- Lower jobs piriority to `low` [#90](https://github.com/opendatateam/udata-piwik/pull/90)
+- Depends on `udata>=1.6.1`
+
 ## 1.2.0 (2018-06-06)
 
 - Simpler and more reliable metrics computation [#54](https://github.com/opendatateam/udata-piwik/pull/54)
