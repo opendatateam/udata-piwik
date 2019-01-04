@@ -2,7 +2,7 @@
 
 ## Current (in progress)
 
-- Nothing yet
+- Add `PIWIK_SCHEME` config support [#104](https://github.com/opendatateam/udata-piwik/pull/104)
 
 ## 1.3.1 (2018-11-05)
 
