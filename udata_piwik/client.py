@@ -16,7 +16,10 @@ DEFAULT_ANALYZE_TIMEOUT = 60 * 5  # in seconds
 
 def analyze(method, **kwargs):
     """Retrieve JSON stats from Piwik for a given `method` and parameters."""
-    base_url = 'http://{0}/index.php'.format(current_app.config['PIWIK_URL'])
+    base_url = '{0}://{1}/index.php'.format(
+        current_app.config.get('PIWIK_SCHEME', 'http'),
+        current_app.config['PIWIK_URL'],
+    )
     data = {
         'module': 'API',
         'idSite': current_app.config['PIWIK_ID'],
@@ -39,7 +42,10 @@ def analyze(method, **kwargs):
 
 def track(url, **kwargs):
     """Track a request to a given `url` by issuing a POST against Piwik."""
-    base_url = 'http://{0}/piwik.php'.format(current_app.config['PIWIK_URL'])
+    base_url = '{0}://{1}/piwik.php'.format(
+        current_app.config.get('PIWIK_SCHEME', 'http'),
+        current_app.config['PIWIK_URL'],
+    )
     data = {
         'rec': 1,
         'idsite': current_app.config['PIWIK_ID'],
