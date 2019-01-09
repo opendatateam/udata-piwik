@@ -27,6 +27,7 @@ Modify your local configuration file of **udata** (typically, `udata.cfg`) as fo
 PLUGINS = ['piwik']
 # Tracked site id in Piwik
 PIWIK_ID = 1
+PIWIK_SCHEME = 'https'
 PIWIK_URL = 'stats.data.gouv.fr'
 PIWIK_AUTH = '<32-chars-auth-token-from-piwik>'
 # Mapping of piwik goals {'<name_in_udata>': <id_in_piwik>}
