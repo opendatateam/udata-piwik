@@ -1,5 +1,9 @@
 # Changelog
 
+## Current (in progress)
+
+- Nothing yet
+
 ## 1.3.2 (2019-01-14)
 
 - Add `PIWIK_SCHEME` config support [#104](https://github.com/opendatateam/udata-piwik/pull/104)
