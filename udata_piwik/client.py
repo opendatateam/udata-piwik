@@ -55,3 +55,17 @@ def track(url, **kwargs):
     timeout = current_app.config.get('PIWIK_TRACK_TIMEOUT',
                                      settings.PIWIK_TRACK_TIMEOUT)
     requests.post(base_url, data=data, timeout=timeout)
+
+
+def bulk_track(*uris):
+    '''
+    Track multiple requests in one API call
+
+    Each entry should be a 2-tuple (`url`, `kwargs`) where:
+      - `url` is the request URL as string
+      - `kwargs` is a `dict` with some extras Piwik parameters
+
+    Entries should be sorted chronologicaly as piwik/matomo expect it.
+    The ordering is the caller responsibility to avoid double sorting.
+    '''
+    pass

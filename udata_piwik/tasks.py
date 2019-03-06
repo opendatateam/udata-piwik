@@ -12,8 +12,9 @@ from udata.core.dataset.signals import on_dataset_published
 from udata.core.reuse.signals import on_reuse_published
 from udata.core.followers.signals import on_new_follow
 
-from .client import track
+from .client import track, bulk_track
 from .counter import counter
+from .models import PiwikTracking
 
 
 log = logging.getLogger(__name__)
@@ -43,7 +44,18 @@ def piwik_yesterday_metrics(self):
 def piwik_track_api(url, **params):
     '''Track an API request into Piwik.'''
     log.debug('Sending to piwik: {url}'.format(url=url))
-    track(url, **params)
+    PiwikTracking.objects.create(url=url, kwargs=params)
+
+
+@job('piwik-bulk-track-api', route='low.piwik')
+def piwik_bulk_track_api(self):
+    log.debug('Submitting API calls in bulk to piwik')
+    tracking = PiwikTracking.objects.all()
+    bulk_track(*[
+        (pt.url, pt.kwargs)
+        for pt in tracking
+    ])
+    tracking.delete()
 
 
 @connect(on_dataset_published, route='low.piwik')

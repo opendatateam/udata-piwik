@@ -120,6 +120,9 @@ setup(
         'udata.commands': [
             'piwik = udata_piwik.commands:piwik',
         ],
+        'udata.models': [
+            'piwik = udata_piwik.models',
+        ],
         'udata.tasks': [
             'piwik = udata_piwik.tasks',
         ],

@@ -15,6 +15,9 @@ from udata.core.followers.signals import on_new_follow
 from udata.core.user.factories import UserFactory
 
 from udata_piwik import tasks
+from udata_piwik.factories import PiwikTrackingFactory
+from udata_piwik.models import PiwikTracking
+
 
 PREFIX = 'https://data.somewhere.com'
 GOAL_NEW_DATASET = 1
@@ -33,12 +36,18 @@ pytestmark = pytest.mark.options(plugins=['piwik'],
 def counter(mocker):
     # Mock counter to speedup test as it is already tested elsewhere
     return mocker.patch('udata_piwik.tasks.counter')
-    
+
 
 @pytest.fixture
 def track(mocker):
     # Mock track to speedup test as it is already tested elsewhere
     return mocker.patch('udata_piwik.tasks.track')
+
+
+@pytest.fixture
+def bulk_track(mocker):
+    # Mock track to speedup test as it is already tested elsewhere
+    return mocker.patch('udata_piwik.tasks.bulk_track')
 
 
 def test_piwik_current_metrics(counter):
@@ -52,13 +61,35 @@ def test_piwik_yesterday_metrics(counter):
     counter.count_for.assert_called_with(yesterday)
 
 
-def test_piwik_track_api(track, app):
+def test_piwik_track_api(track, app, clean_db):
     path = '/api/1/some/api'
     user = UserFactory()
     with app.test_request_context(path, base_url=PREFIX):
         tracking.send_signal(on_api_call, request, user)
 
-    track.assert_called_with(PREFIX + path, uid=user.id, user_ip=None)
+    assert not track.called
+    assert PiwikTracking.objects.count() == 1
+
+    pt = PiwikTracking.objects.first()
+    assert pt.url == PREFIX + path
+    assert pt.date is not None
+    assert pt.kwargs == {
+        'uid': user.id,
+        'user_ip': None,
+    }
+
+
+def test_piwik_bulk_track_api(bulk_track, clean_db):
+    entries = PiwikTrackingFactory.create_batch(3)
+
+    tasks.piwik_bulk_track_api()
+
+    assert PiwikTracking.objects.count() == 0
+    bulk_track.assert_called_with(*[
+        (e.url, e.kwargs)
+        # Chronoligical order expected
+        for e in sorted(entries, key=lambda e: e.date)
+    ])
 
 
 def test_piwik_track_new_follow(track, app):
