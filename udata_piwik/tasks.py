@@ -48,13 +48,17 @@ def piwik_track_api(url, **params):
 
 
 @job('piwik-bulk-track-api', route='low.piwik')
-def piwik_bulk_track_api(self):
+def piwik_bulk_track_api(self, max_urls):
+    '''
+    Submit API calls tracking in bulk.
+
+    This task should be scheduled with the max number of URLs
+    to process in the batch as sole argument
+    Adjust the couple "scheduling/max URLs" to your needs.
+    '''
     log.debug('Submitting API calls in bulk to piwik')
-    tracking = PiwikTracking.objects.all()
-    bulk_track(*[
-        (pt.url, pt.kwargs)
-        for pt in tracking
-    ])
+    tracking = PiwikTracking.objects[:max_urls]
+    bulk_track(*[(pt.url, pt.kwargs) for pt in tracking])
     tracking.delete()
 
 

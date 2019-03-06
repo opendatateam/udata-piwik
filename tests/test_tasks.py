@@ -80,15 +80,26 @@ def test_piwik_track_api(track, app, clean_db):
 
 
 def test_piwik_bulk_track_api(bulk_track, clean_db):
-    entries = PiwikTrackingFactory.create_batch(3)
+    max_urls = 2
+    total = 3
+    entries = PiwikTrackingFactory.create_batch(total)
 
-    tasks.piwik_bulk_track_api()
+    tasks.piwik_bulk_track_api(max_urls)
+
+    assert PiwikTracking.objects.count() == total - max_urls
+    bulk_track.assert_called_with(*[
+        (e.url, e.kwargs)
+        # Chronoligical order expected
+        for e in sorted(entries, key=lambda e: e.date)[:max_urls]
+    ])
+
+    tasks.piwik_bulk_track_api(max_urls)
 
     assert PiwikTracking.objects.count() == 0
     bulk_track.assert_called_with(*[
         (e.url, e.kwargs)
         # Chronoligical order expected
-        for e in sorted(entries, key=lambda e: e.date)
+        for e in sorted(entries, key=lambda e: e.date)[max_urls:]
     ])
 
 
