@@ -2,7 +2,7 @@
 
 ## Current (in progress)
 
-- Nothing yet
+- Consolidate and expose default settings [#119](https://github.com/opendatateam/udata-piwik/pull/119)
 
 ## 1.3.2 (2019-01-14)
 
