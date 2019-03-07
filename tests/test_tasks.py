@@ -13,6 +13,7 @@ from udata.core.dataset.signals import on_dataset_published
 from udata.core.reuse.signals import on_reuse_published
 from udata.core.followers.signals import on_new_follow
 from udata.core.user.factories import UserFactory
+from udata.utils import faker
 
 from udata_piwik import tasks
 from udata_piwik.factories import PiwikTrackingFactory
@@ -64,7 +65,9 @@ def test_piwik_yesterday_metrics(counter):
 def test_piwik_track_api(track, app, clean_db):
     path = '/api/1/some/api'
     user = UserFactory()
-    with app.test_request_context(path, base_url=PREFIX):
+    ip = faker.ipv4()
+    with app.test_request_context(path, base_url=PREFIX,
+                                  environ_base={'REMOTE_ADDR': ip}):
         tracking.send_signal(on_api_call, request, user)
 
     assert not track.called
@@ -75,7 +78,7 @@ def test_piwik_track_api(track, app, clean_db):
     assert pt.date is not None
     assert pt.kwargs == {
         'uid': user.id,
-        'user_ip': None,
+        'cip': ip,
     }
 
 

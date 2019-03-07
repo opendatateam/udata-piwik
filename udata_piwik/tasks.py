@@ -44,6 +44,8 @@ def piwik_yesterday_metrics(self):
 def piwik_track_api(url, **params):
     '''Track an API request into Piwik.'''
     log.debug('Sending to piwik: {url}'.format(url=url))
+    if 'user_ip' in params:
+        params['cip'] = params.pop('user_ip')
     PiwikTracking.objects.create(url=url, kwargs=params)
 
 
