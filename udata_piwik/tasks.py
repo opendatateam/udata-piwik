@@ -58,7 +58,7 @@ def piwik_bulk_track_api(self, max_urls):
     '''
     log.debug('Submitting API calls in bulk to piwik')
     tracking = PiwikTracking.objects[:max_urls]
-    bulk_track(*[(pt.url, pt.kwargs) for pt in tracking])
+    bulk_track(*[(pt.url, pt.date, pt.kwargs) for pt in tracking])
     tracking.delete()
 
 
