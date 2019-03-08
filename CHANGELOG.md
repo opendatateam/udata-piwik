@@ -3,6 +3,7 @@
 ## Current (in progress)
 
 - Consolidate and expose default settings [#119](https://github.com/opendatateam/udata-piwik/pull/119)
+- Process API calls in bulk [#120](https://github.com/opendatateam/udata-piwik/pull/120)
 
 ## 1.3.2 (2019-01-14)
 

@@ -31,3 +31,7 @@ PIWIK_ANALYZE_TIMEOUT = 60 * 5
 
 # Piwik/Matomo tracking submission timeout in seconds
 PIWIK_TRACK_TIMEOUT = 60
+
+# Use bulk API calls processing
+# NB: if true, you need to schedule the `piwik-bulk-track-api` job
+PIWIK_BULK = False
