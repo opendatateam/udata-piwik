@@ -105,6 +105,7 @@ setup(
     version='1.3.3.dev',
     description='Piwik support for uData',
     long_description=long_description,
+    long_description_content_type='text/markdown',
     url='https://github.com/opendatateam/udata-piwik',
     author='OpenDataTeam',
     author_email='contact@opendata.team',
