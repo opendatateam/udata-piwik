@@ -15,6 +15,7 @@ from udata.core.followers.signals import on_new_follow
 from .client import track, bulk_track
 from .counter import counter
 from .models import PiwikTracking
+from .settings import PIWIK_BULK as PIWIK_BULK_DEFAULT
 
 
 log = logging.getLogger(__name__)
@@ -46,7 +47,10 @@ def piwik_track_api(url, **params):
     log.debug('Sending to piwik: {url}'.format(url=url))
     if 'user_ip' in params:
         params['cip'] = params.pop('user_ip')
-    PiwikTracking.objects.create(url=url, kwargs=params)
+    if current_app.config.get('PIWIK_BULK', PIWIK_BULK_DEFAULT):
+        PiwikTracking.objects.create(url=url, kwargs=params)
+    else:
+        track(url, **params)
 
 
 @job('piwik-bulk-track-api', route='low.piwik')

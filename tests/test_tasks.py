@@ -51,18 +51,32 @@ def bulk_track(mocker):
     return mocker.patch('udata_piwik.tasks.bulk_track')
 
 
-def test_piwik_current_metrics(counter):
+def test_piwik_current_metrics(app, counter):
     tasks.piwik_current_metrics()
     counter.count_for.assert_called_with(date.today())
 
 
-def test_piwik_yesterday_metrics(counter):
+def test_piwik_yesterday_metrics(app, counter):
     yesterday = date.today() - timedelta(days=1)
     tasks.piwik_yesterday_metrics()
     counter.count_for.assert_called_with(yesterday)
 
 
-def test_piwik_track_api(track, app, clean_db):
+@pytest.mark.options(PIWIK_BULK=False)
+def test_piwik_track_api_without_bulk(track, app, clean_db):
+    path = '/api/1/some/api'
+    user = UserFactory()
+    ip = faker.ipv4()
+    with app.test_request_context(path, base_url=PREFIX,
+                                  environ_base={'REMOTE_ADDR': ip}):
+        tracking.send_signal(on_api_call, request, user)
+
+    track.assert_called_with(PREFIX + path, uid=user.id, cip=ip)
+    assert PiwikTracking.objects.count() == 0
+
+
+@pytest.mark.options(PIWIK_BULK=True)
+def test_piwik_track_api_with_bulk(track, app, clean_db):
     path = '/api/1/some/api'
     user = UserFactory()
     ip = faker.ipv4()
