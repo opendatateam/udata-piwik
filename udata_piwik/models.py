@@ -10,7 +10,7 @@ __all__ = ('PiwikTracking', )
 
 
 class PiwikTracking(db.Document):
-    url = db.URLField(required=True)
+    url = db.StringField(required=True)
     date = db.DateTimeField(required=True, default=datetime.now)
     kwargs = db.DictField()
 
