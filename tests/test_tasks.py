@@ -120,6 +120,21 @@ def test_piwik_bulk_track_api(bulk_track, clean_db, mocker):
     ])
 
 
+def test_piwik_bulk_track_api_with_string_parameter(bulk_track, clean_db, mocker):
+    max_urls = 2
+    total = 3
+    entries = PiwikTrackingFactory.create_batch(total)
+
+    tasks.piwik_bulk_track_api(str(max_urls))
+
+    assert PiwikTracking.objects.count() == total - max_urls
+    bulk_track.assert_called_with(*[
+        (e.url, mocker.ANY, e.kwargs)
+        # Chronoligical order expected
+        for e in sorted(entries, key=lambda e: e.date)[:max_urls]
+    ])
+
+
 def test_piwik_track_new_follow(track, app):
     path = '/path/to/dataset'
     user = UserFactory()

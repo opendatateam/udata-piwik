@@ -63,6 +63,8 @@ def piwik_bulk_track_api(self, max_urls):
     Adjust the couple "scheduling/max URLs" to your needs.
     '''
     log.debug('Submitting API calls in bulk to piwik')
+    if not isinstance(max_urls, int):
+        max_urls = int(max_urls)
     tracking = PiwikTracking.objects[:max_urls]
     bulk_track(*[(pt.url, pt.date, pt.kwargs) for pt in tracking])
     tracking.delete()
