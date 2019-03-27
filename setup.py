@@ -102,7 +102,7 @@ tests_require = pip('test.pip')
 
 setup(
     name='udata-piwik',
-    version='1.4.0',
+    version='1.4.1.dev',
     description='Piwik support for uData',
     long_description=long_description,
     long_description_content_type='text/markdown',
