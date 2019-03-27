@@ -11,6 +11,14 @@ from flask import current_app
 
 from . import settings
 
+# Prevent max headers error by raising the hardcoded limit
+try:
+    import httplib  # or http.client if you're on Python 3
+except ImportError:
+    import http.client as httplib
+httplib._MAXHEADERS = 10000
+
+
 log = logging.getLogger(__name__)
 
 
