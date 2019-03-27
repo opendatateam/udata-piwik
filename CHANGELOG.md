@@ -1,6 +1,6 @@
 # Changelog
 
-## Current (in progress)
+## 1.4.0 (2019-03-27)
 
 - Consolidate and expose default settings [#119](https://github.com/opendatateam/udata-piwik/pull/119)
 - Process API calls in bulk [#120](https://github.com/opendatateam/udata-piwik/pull/120)
