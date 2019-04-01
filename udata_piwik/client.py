@@ -2,7 +2,7 @@ import logging
 import requests
 
 from datetime import date
-from urllib import urlencode
+from urllib.parse import urlencode
 
 from flask import current_app
 
