@@ -26,7 +26,7 @@ def has_data():
     }
     r = requests.get('%s/index.php' % BASE_URL, params=data)
     data = r.json()
-    assert isinstance(data, list) and len(data)
+    assert isinstance(data, list)
     return True
 
 

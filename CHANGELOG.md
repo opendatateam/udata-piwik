@@ -4,6 +4,15 @@
 
 - Migrate to python3 🐍 [#68](https://github.com/opendatateam/udata-piwik/pull/68)
 
+## 1.4.0 (2019-03-27)
+
+- Consolidate and expose default settings [#119](https://github.com/opendatateam/udata-piwik/pull/119)
+- Process API calls in bulk [#120](https://github.com/opendatateam/udata-piwik/pull/120)
+
+## 1.3.2 (2019-01-14)
+
+- Add `PIWIK_SCHEME` config support [#104](https://github.com/opendatateam/udata-piwik/pull/104)
+
 ## 1.3.1 (2018-11-05)
 
 - Ensure JS goals handling waits for `uData` object to be present [#91](https://github.com/opendatateam/udata-piwik/pull/91)

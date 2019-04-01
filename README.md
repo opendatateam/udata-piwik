@@ -1,17 +1,17 @@
-# uData-piwik
+# udata-piwik
 
 [![Build status][circleci-badge]][circleci-url]
 [![Join the chat at https://gitter.im/opendatateam/udata][gitter-badge]][gitter-url]
 
-This plugin provide integration between uData and Piwik
+This plugin provide integration between [udata][] and [Piwik/Matomo](https://matomo.org/)
 
 ## Compatibility
 
-**udata-piwik** requires Python 2.7+ and [uData][].
+**udata-piwik** requires Python 2.7+ and [udata][].
 
 ## Installation
 
-Install [uData][].
+Install [udata][].
 
 Remain in the same virtual environment (for Python) and use the same version of npm (for JS).
 
@@ -27,6 +27,7 @@ Modify your local configuration file of **udata** (typically, `udata.cfg`) as fo
 PLUGINS = ['piwik']
 # Tracked site id in Piwik
 PIWIK_ID = 1
+PIWIK_SCHEME = 'https'
 PIWIK_URL = 'stats.data.gouv.fr'
 PIWIK_AUTH = '<32-chars-auth-token-from-piwik>'
 # Mapping of piwik goals {'<name_in_udata>': <id_in_piwik>}
@@ -66,4 +67,4 @@ $ pytest
 [circleci-badge]: https://circleci.com/gh/opendatateam/udata-piwik.svg?style=shield
 [gitter-badge]: https://badges.gitter.im/Join%20Chat.svg
 [gitter-url]: https://gitter.im/opendatateam/udata
-[uData]: https://github.com/opendatateam/udata
+[udata]: https://github.com/opendatateam/udata

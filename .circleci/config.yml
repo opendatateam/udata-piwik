@@ -89,12 +89,11 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - run:
-          name: Install Twine
-          command: pip install twine
       - deploy:
           name: Publish on PyPI
-          command: twine upload --username "${PYPI_USERNAME}" --password "${PYPI_PASSWORD}" dist/*.whl
+          command: |
+            source venv/bin/activate
+            twine upload --username "${PYPI_USERNAME}" --password "${PYPI_PASSWORD}" dist/*.whl
 
   github:
     docker:
