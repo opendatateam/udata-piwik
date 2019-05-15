@@ -2,7 +2,7 @@
 
 ## Current (in progress)
 
-- Nothing yet
+- Fix bulk handling of unicode URLs [#139](https://github.com/opendatateam/udata-piwik/pull/139)
 
 ## 1.4.0 (2019-03-27)
 

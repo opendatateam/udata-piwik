@@ -70,11 +70,11 @@ def encode_for_bulk(url, dt, kwargs):
     qs = {
         'rec': 1,
         'idsite': current_app.config['PIWIK_ID'],
-        'url': url,
+        'url': url.encode('utf-8'),
         'cdt': dt.strftime('%s'),
     }
     qs.update(kwargs)
-    return '?' + urlencode(qs)
+    return '?%s' % urlencode(qs)
 
 
 def bulk_track(*uris):

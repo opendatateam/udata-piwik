@@ -50,6 +50,7 @@ def test_track(ready):
 
 def test_bulk_track(ready):
     urls = [('http://local.test/' + faker.uri_path(), datetime.now(), {}) for _ in range(3)]
+    urls.append(('https://local.test/utf8-éèü', datetime.now(), {}))
 
     response = bulk_track(*urls)
 
