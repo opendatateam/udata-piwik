@@ -1,6 +1,6 @@
 # Changelog
 
-## Current (in progress)
+## 1.4.1 (2019-05-15)
 
 - Fix bulk handling of unicode URLs [#139](https://github.com/opendatateam/udata-piwik/pull/139)
 
