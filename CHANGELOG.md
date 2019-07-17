@@ -4,6 +4,10 @@
 
 - Migrate to python3 🐍 [#68](https://github.com/opendatateam/udata-piwik/pull/68)
 
+## 1.4.1 (2019-05-15)
+
+- Fix bulk handling of unicode URLs [#139](https://github.com/opendatateam/udata-piwik/pull/139)
+
 ## 1.4.0 (2019-03-27)
 
 - Consolidate and expose default settings [#119](https://github.com/opendatateam/udata-piwik/pull/119)
