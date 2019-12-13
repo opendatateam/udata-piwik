@@ -2,7 +2,7 @@
 
 ## Current (in progress)
 
-- Nothing yet
+- Improve detect_by_url error handling [#171](https://github.com/opendatateam/udata-piwik/pull/171)
 
 ## 1.4.1 (2019-05-15)
 
