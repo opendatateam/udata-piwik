@@ -5,7 +5,6 @@ import pytest
 
 from datetime import date, datetime
 
-
 from udata.utils import faker
 
 from udata_piwik.client import bulk_track, analyze, track
