@@ -2,7 +2,7 @@
 
 ## Current (in progress)
 
-- Nothing yet
+- Independant Matomo site ids for front and api tracking
 
 ## 1.4.2 (2019-12-13)
 

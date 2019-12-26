@@ -30,7 +30,7 @@ def analyze(method, **kwargs):
     )
     data = {
         'module': 'API',
-        'idSite': current_app.config['PIWIK_ID'],
+        'idSite': current_app.config['PIWIK_ID_API'],
         'method': method,
         'format': kwargs.pop('format', 'json'),
     }
@@ -56,7 +56,7 @@ def track(url, **kwargs):
     )
     data = {
         'rec': 1,
-        'idsite': current_app.config['PIWIK_ID'],
+        'idsite': current_app.config['PIWIK_ID_API'],
         'url': url,
         'token_auth': current_app.config['PIWIK_AUTH']
     }
@@ -69,7 +69,7 @@ def track(url, **kwargs):
 def encode_for_bulk(url, dt, kwargs):
     qs = {
         'rec': 1,
-        'idsite': current_app.config['PIWIK_ID'],
+        'idsite': current_app.config['PIWIK_ID_API'],
         'url': url.encode('utf-8'),
         'cdt': dt.strftime('%s'),
     }
