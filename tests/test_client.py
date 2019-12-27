@@ -38,6 +38,9 @@ def find_tracking(url, data):
 
 
 def test_track(ready):
+    '''
+    Use bulk_track w/ default params which should log to PIWIK_ID_FRONT
+    '''
     url = 'http://local.test/' + faker.uri_path()
 
     track(url)
@@ -47,7 +50,41 @@ def test_track(ready):
     assert t is not None, 'No tracking entry found for {}'.format(url)
 
 
-def test_bulk_track(ready):
+def test_track_is_api(ready):
+    '''
+    Use bulk_track w/ is_api=True which should log to PIWIK_ID_API
+    '''
+    url = 'http://local.test/' + faker.uri_path()
+
+    track(url, is_api=True)
+
+    data = analyze('Actions.getPageUrls', period='day', date=date.today(), expanded=1, is_api=True)
+    t = find_tracking(url, data)
+    assert t is not None, 'No tracking entry found for {}'.format(url)
+
+
+def test_bulk_track_not_is_api(ready):
+    '''
+    Use bulk_track w/ is_api=False which should log to PIWIK_ID_FRONT
+    '''
+    urls = [('http://local.test/' + faker.uri_path(), datetime.now(), {}) for _ in range(3)]
+    urls.append(('https://local.test/utf8-éèü', datetime.now(), {}))
+
+    response = bulk_track(*urls, is_api=False)
+
+    assert response['status'] == 'success'
+    assert response['tracked'] == len(urls)
+
+    data = analyze('Actions.getPageUrls', period='day', date=date.today(), expanded=1)
+    for (url, _, _) in urls:
+        t = find_tracking(url, data)
+        assert t is not None, 'No tracking entry found for {}'.format(url)
+
+
+def test_bulk_track_is_api(ready):
+    '''
+    Use bulk_track w/ default params which should log to PIWIK_ID_API
+    '''
     urls = [('http://local.test/' + faker.uri_path(), datetime.now(), {}) for _ in range(3)]
     urls.append(('https://local.test/utf8-éèü', datetime.now(), {}))
 
@@ -56,7 +93,7 @@ def test_bulk_track(ready):
     assert response['status'] == 'success'
     assert response['tracked'] == len(urls)
 
-    data = analyze('Actions.getPageUrls', period='day', date=date.today(), expanded=1)
+    data = analyze('Actions.getPageUrls', period='day', date=date.today(), expanded=1, is_api=True)
     for (url, _, _) in urls:
         t = find_tracking(url, data)
         assert t is not None, 'No tracking entry found for {}'.format(url)

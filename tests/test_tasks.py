@@ -69,7 +69,7 @@ def test_piwik_track_api_without_bulk(track, app, clean_db):
                                   environ_base={'REMOTE_ADDR': ip}):
         tracking.send_signal(on_api_call, request, user)
 
-    track.assert_called_with(PREFIX + path, uid=user.id, cip=ip)
+    track.assert_called_with(PREFIX + path, uid=user.id, cip=ip, is_api=True)
     assert PiwikTracking.objects.count() == 0
 
 

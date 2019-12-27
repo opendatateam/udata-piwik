@@ -23,14 +23,16 @@ log = logging.getLogger(__name__)
 
 
 def analyze(method, **kwargs):
-    """Retrieve JSON stats from Piwik for a given `method` and parameters."""
+    """Retrieve JSON stats from PIWIK_ID_FRONT for a given `method` and parameters."""
+    is_api = kwargs.pop('is_api', False)
+    site_id = current_app.config['PIWIK_ID_API'] if is_api else current_app.config['PIWIK_ID_FRONT']
     base_url = '{0}://{1}/index.php'.format(
         current_app.config.get('PIWIK_SCHEME', settings.PIWIK_SCHEME),
         current_app.config['PIWIK_URL'],
     )
     data = {
         'module': 'API',
-        'idSite': current_app.config['PIWIK_ID_API'],
+        'idSite': site_id,
         'method': method,
         'format': kwargs.pop('format', 'json'),
     }
@@ -50,14 +52,16 @@ def analyze(method, **kwargs):
 
 def track(url, **kwargs):
     """Track a request to a given `url` by issuing a POST against Piwik."""
+    is_api = kwargs.pop('is_api', False)
+    site_id = current_app.config['PIWIK_ID_API'] if is_api else current_app.config['PIWIK_ID_FRONT']
     base_url = '{0}://{1}/piwik.php'.format(
         current_app.config.get('PIWIK_SCHEME', settings.PIWIK_SCHEME),
         current_app.config['PIWIK_URL'],
     )
     data = {
         'rec': 1,
-        'idsite': current_app.config['PIWIK_ID_API'],
         'url': url,
+        'idsite': site_id,
         'token_auth': current_app.config['PIWIK_AUTH']
     }
     data.update(kwargs)
@@ -66,18 +70,18 @@ def track(url, **kwargs):
     requests.post(base_url, data=data, timeout=timeout)
 
 
-def encode_for_bulk(url, dt, kwargs):
+def encode_for_bulk(url, dt, kwargs, is_api=True):
     qs = {
         'rec': 1,
-        'idsite': current_app.config['PIWIK_ID_API'],
         'url': url.encode('utf-8'),
         'cdt': dt.strftime('%s'),
     }
     qs.update(kwargs)
+    qs['idsite'] = current_app.config['PIWIK_ID_API'] if is_api else current_app.config['PIWIK_ID_FRONT']
     return '?%s' % urlencode(qs)
 
 
-def bulk_track(*uris):
+def bulk_track(*uris, **kwargs):
     '''
     Track multiple requests in one API call
 
@@ -93,11 +97,12 @@ def bulk_track(*uris):
         current_app.config.get('PIWIK_SCHEME', settings.PIWIK_SCHEME),
         current_app.config['PIWIK_URL'],
     )
+    is_api = kwargs.pop('is_api', True)
     data = {
         'token_auth': current_app.config['PIWIK_AUTH'],
         'requests': [
-            encode_for_bulk(url, ts, kwargs)
-            for url, ts, kwargs in uris
+            encode_for_bulk(url, ts, _kwargs, is_api=is_api)
+            for url, ts, _kwargs in uris
         ]
     }
     timeout = current_app.config.get('PIWIK_TRACK_TIMEOUT',

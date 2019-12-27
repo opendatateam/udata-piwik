@@ -128,7 +128,7 @@ def fixtures(app, reset_piwik, dataset_resource, organization,
     # wait for Piwik to be populated
     assert has_data()
     counter.count_for(date.today())
-    # count twice to be ensure idempotence on one day
+    # count twice to ensure idempotence on one day
     counter.count_for(date.today())
     dataset, resource = dataset_resource
     d_w_previous_data, r_w_previous_data = dataset_resource_w_previous_data
