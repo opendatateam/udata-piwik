@@ -40,11 +40,12 @@
   // Wait for uData object to be present
   window.addEventListener("load", function() {
     for (var goal in PIWIK_GOALS) {
-      var value = PIWIK_GOALS[goal];
-      uData.pubsub.subscribe(goal, function () {
+      const value = PIWIK_GOALS[goal];
+      const pub_fn = () => {
         uData.log.debug('Tracking goal', goal, 'with value', value);
         _paq.push(['trackGoal', value]);
-      });
+      };
+      uData.pubsub.subscribe(goal, pub_fn);
     }
   }, false);
   {% endif %}
