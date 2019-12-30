@@ -1,6 +1,6 @@
 # Changelog
 
-## Current (in progress)
+## 1.5.0 (2019-12-30)
 
 - Independant Matomo site ids for front and api tracking :warning: breaking change, you need to set `PIWIK_ID_FRONT` and `PIWIK_ID_API` in settings (they can be the same) [#173](https://github.com/opendatateam/udata-piwik/pull/173)
 
