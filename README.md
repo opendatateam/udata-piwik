@@ -25,8 +25,11 @@ Modify your local configuration file of **udata** (typically, `udata.cfg`) as fo
 
 ```python
 PLUGINS = ['piwik']
-# Tracked site id in Piwik
-PIWIK_ID = 1
+# Piwik/Matomo site IDs
+# this site will track front (template) events
+PIWIK_ID_FRONT = 1
+# this site will track back (API) events
+PIWIK_ID_API = 1
 PIWIK_SCHEME = 'https'
 PIWIK_URL = 'stats.data.gouv.fr'
 PIWIK_AUTH = '<32-chars-auth-token-from-piwik>'

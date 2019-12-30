@@ -9,8 +9,11 @@ PIWIK_URL = None
 # Scheme used to make Piwik/Matomo API calls (http or https)
 PIWIK_SCHEME = 'http'
 
-# Piwik/Matomo site ID
-PIWIK_ID = 1
+# Piwik/Matomo site IDs
+# this site will track front (template) events
+PIWIK_ID_FRONT = 1
+# this site will track back (API) events
+PIWIK_ID_API = 1
 
 # Authentication token from Piwik/Matomo
 PIWIK_AUTH = '<32-chars-auth-token-from-piwik>'
