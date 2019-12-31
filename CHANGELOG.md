@@ -1,6 +1,6 @@
 # Changelog
 
-## Current (in progress)
+## 1.5.1 (2019-12-31)
 
 - Fix JS syntax when subscribing to goals [#174](https://github.com/opendatateam/udata-piwik/pull/174)
 
