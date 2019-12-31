@@ -2,7 +2,7 @@
 
 ## Current (in progress)
 
-- Nothing yet
+- Fix JS syntax when subscribing to goals [#174](https://github.com/opendatateam/udata-piwik/pull/174)
 
 ## 1.5.0 (2019-12-30)
 
