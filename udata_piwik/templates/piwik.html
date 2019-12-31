@@ -50,14 +50,6 @@
     for (var goal in PIWIK_GOALS) {
       _loop();
     }
-    // for (var goal in PIWIK_GOALS) {
-    //   var value = PIWIK_GOALS[goal];
-    //   var pub_fn = function () {
-    //     uData.log.debug('Tracking goal', goal, 'with value', value);
-    //     _paq.push(['trackGoal', value]);
-    //   };
-    //   uData.pubsub.subscribe(goal, pub_fn);
-    // }
   }, false);
   {% endif %}
 
