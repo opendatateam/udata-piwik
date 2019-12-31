@@ -39,14 +39,25 @@
   var PIWIK_GOALS = {{config.PIWIK_GOALS|to_json|safe}};
   // Wait for uData object to be present
   window.addEventListener("load", function() {
-    for (var goal in PIWIK_GOALS) {
-      const value = PIWIK_GOALS[goal];
-      const pub_fn = () => {
+    var _loop = function _loop() {
+      var value = PIWIK_GOALS[goal];
+      var pub_fn = function pub_fn() {
         uData.log.debug('Tracking goal', goal, 'with value', value);
         _paq.push(['trackGoal', value]);
       };
       uData.pubsub.subscribe(goal, pub_fn);
+    };
+    for (var goal in PIWIK_GOALS) {
+      _loop();
     }
+    // for (var goal in PIWIK_GOALS) {
+    //   var value = PIWIK_GOALS[goal];
+    //   var pub_fn = function () {
+    //     uData.log.debug('Tracking goal', goal, 'with value', value);
+    //     _paq.push(['trackGoal', value]);
+    //   };
+    //   uData.pubsub.subscribe(goal, pub_fn);
+    // }
   }, false);
   {% endif %}
 
