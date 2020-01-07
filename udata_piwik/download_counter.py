@@ -66,32 +66,31 @@ class DailyDownloadCounter(object):
             except CommunityResource.DoesNotExist:
                 log.error('No object found for resource_id %s' % resource_id)
 
-    def detect_by_hashed_url(self, hashed_url, row):
+    def detect_by_url(self, row):
+        url = row['url']
+        hashed_url = hash_url(url)
         found = False
-        try:
-            datasets = Dataset.objects.filter(resources__urlhash=hashed_url)
-            for dataset in datasets:
-                resource = get_by(dataset.resources, 'urlhash', hashed_url)
-                self.resources.append({
-                    'dataset': dataset,
-                    'resource': resource,
-                    'data': row,
-                })
-                found = True
-        except Dataset.DoesNotExist:
-            pass
-        try:
-            resources = CommunityResource.objects.filter(urlhash=hashed_url)
-            for resource in resources:
-                self.community_resources.append({
-                    'resource': resource,
-                    'data': row,
-                })
-                found = True
-        except CommunityResource.DoesNotExist:
-            pass
+        datasets = Dataset.objects.filter(resources__urlhash=hashed_url)
+        for dataset in datasets:
+            resource = get_by(dataset.resources, 'urlhash', hashed_url)
+            self.resources.append({
+                'dataset': dataset,
+                'resource': resource,
+                'data': row,
+            })
+            found = True
+        resources = CommunityResource.objects.filter(urlhash=hashed_url)
+        for resource in resources:
+            self.community_resources.append({
+                'resource': resource,
+                'data': row,
+            })
+            found = True
         if not found:
-            log.error('No object found for urlhash %s' % hashed_url)
+            log.error('No resource found by url', extra={
+                'hashed_url': hashed_url,
+                'url': url
+            })
 
     def detect_download_objects(self):
         for row in self.rows:
@@ -102,8 +101,7 @@ class DailyDownloadCounter(object):
             if resource_id:
                 self.detect_by_resource_id(resource_id, row)
             else:
-                hashed_url = hash_url(row['url'])
-                self.detect_by_hashed_url(hashed_url, row)
+                self.detect_by_url(row)
 
     def handle_resources_downloads(self):
         for item in self.resources:

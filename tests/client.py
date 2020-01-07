@@ -16,7 +16,7 @@ def has_data():
     """Has piwik stored somed data?"""
     data = {
         'module': 'API',
-        'idSite': PiwikSettings.PIWIK_ID,
+        'idSite': PiwikSettings.PIWIK_ID_FRONT,
         'method': 'Actions.getPageUrls',
         'format': 'json',
         'token_auth': PiwikSettings.PIWIK_AUTH,

@@ -47,7 +47,7 @@ def piwik_track_api(url, **params):
     if current_app.config.get('PIWIK_BULK', PIWIK_BULK_DEFAULT):
         PiwikTracking.objects.create(url=url, kwargs=params)
     else:
-        track(url, **params)
+        track(url, is_api=True, **params)
 
 
 @job('piwik-bulk-track-api', route='low.piwik')

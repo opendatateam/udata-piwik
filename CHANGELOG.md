@@ -5,6 +5,18 @@
 - Migrate to python3 🐍 [#68](https://github.com/opendatateam/udata-piwik/pull/68)
 - Migrate footer snippet to the new `footer.snippets` hook [#157](https://github.com/opendatateam/udata-piwik/pull/157)
 
+## 1.5.1 (2019-12-31)
+
+- Fix JS syntax when subscribing to goals [#174](https://github.com/opendatateam/udata-piwik/pull/174)
+
+## 1.5.0 (2019-12-30)
+
+- Independant Matomo site ids for front and api tracking :warning: breaking change, you need to set `PIWIK_ID_FRONT` and `PIWIK_ID_API` in settings (they can be the same) [#173](https://github.com/opendatateam/udata-piwik/pull/173)
+
+## 1.4.2 (2019-12-13)
+
+- Improve detect_by_url error handling [#171](https://github.com/opendatateam/udata-piwik/pull/171)
+
 ## 1.4.1 (2019-05-15)
 
 - Fix bulk handling of unicode URLs [#139](https://github.com/opendatateam/udata-piwik/pull/139)

@@ -1,4 +1,4 @@
-{% if config.PIWIK_URL and config.PIWIK_ID %}
+{% if config.PIWIK_URL and config.PIWIK_ID_FRONT %}
 <!-- Piwik -->
 <script type="text/javascript">
   var _paq = _paq || [];
@@ -12,17 +12,17 @@
   (function() {
     var u=(("https:" == document.location.protocol) ? "https" : "http") + "://{{config.PIWIK_URL}}/";
     _paq.push(['setTrackerUrl', u+'piwik.php']);
-    _paq.push(['setSiteId', {{config.PIWIK_ID}}]);
+    _paq.push(['setSiteId', {{config.PIWIK_ID_FRONT}}]);
     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0]; g.type='text/javascript';
     g.defer=true; g.async=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
   })();
-  
+
   {% if config.PIWIK_CONTENT_TRACKING == 'all' %}
   _paq.push(['trackAllContentImpressions']);
   {% elif config.PIWIK_CONTENT_TRACKING == 'visible' %}
   _paq.push(['trackVisibleContentImpressions']);
   {% endif %}
-  
+
   {# We only enable search tracking on search pages with queries #}
   {% if request.endpoint in ('search.index', 'datasets.list') and request.args.q%}
   {# Global search is considered as datasets search #}
@@ -39,17 +39,21 @@
   var PIWIK_GOALS = {{config.PIWIK_GOALS|to_json|safe}};
   // Wait for uData object to be present
   window.addEventListener("load", function() {
-    for (var goal in PIWIK_GOALS) {
+    var _loop = function _loop() {
       var value = PIWIK_GOALS[goal];
-      uData.pubsub.subscribe(goal, function () {
+      var pub_fn = function pub_fn() {
         uData.log.debug('Tracking goal', goal, 'with value', value);
         _paq.push(['trackGoal', value]);
-      });
+      };
+      uData.pubsub.subscribe(goal, pub_fn);
+    };
+    for (var goal in PIWIK_GOALS) {
+      _loop();
     }
   }, false);
   {% endif %}
 
 
 </script>
-<noscript><p><img src="http://{{config.PIWIK_URL}}/piwik.php?idsite={{config.PIWIK_ID}}" style="border:0;" alt="" /></p></noscript>
+<noscript><p><img src="http://{{config.PIWIK_URL}}/piwik.php?idsite={{config.PIWIK_ID_FRONT}}" style="border:0;" alt="" /></p></noscript>
 {% endif %}
