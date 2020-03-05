@@ -22,44 +22,60 @@ def get_backend_client():
 
 
 def update_metrics_from_backend():
+    '''
+    TODO: factorize those fns (maybe class based?)
+    '''
     update_resources_metrics_from_backend()
-    # TODO other objects
+    update_datasets_metrics_from_backend()
 
 
 def update_resources_metrics_from_backend():
-    '''Update resources' metrics from backend'''
+    '''
+    Update resources' metrics from backend.
+
+    Get a sum of all metrics for `resource_views` on the backend and
+    attach them to `resource.metrics`.
+    '''
+    log.info('Updating resources metrics from backend...')
     client = get_backend_client()
-    query = 'select sum(*) from resource_views group by dataset, resource;'
+    query = 'select sum(*) from resource_views group by resource;'
     result = client.query(query)
     for (_, keys), _values in result.items():
         values = next(_values)
         values.pop('time')
+        resource_id = keys['resource']
         resource_id = uuid.UUID(resource_id)
         resource = get_resource(resource_id)
         if resource:
-            print(dataset_id, resource.id, values)
+            log.debug('Found resource %s: %s', resource.id, values)
             resource.metrics.update(values)
             resource.save()
         else:
-            log.error(f'Resource not found - id {resource_id}, dataset {dataset_id}')
+            log.error('Resource not found - id %s', resource_id)
 
 
-def aggregate_organization_datasets_daily(org, day):
-    keys = ['datasets_{0}'.format(k) for k in KEYS]
-    ids = [d.id for d in Dataset.objects(organization=org).only('id')]
-    metrics = Metrics.objects(object_id__in=ids,
-                              level='daily', date=day.isoformat())
-    values = [int(metrics.sum('values.{0}'.format(k))) for k in KEYS]
-    return Metrics.objects.update_daily(org, day, **dict(zip(keys, values)))
+def update_datasets_metrics_from_backend():
+    '''
+    Update datasets' metrics from backend.
 
-
-def aggregate_organization_reuses_daily(org, day):
-    keys = ['reuses_{0}'.format(k) for k in KEYS]
-    ids = [r.id for r in Reuse.objects(organization=org).only('id')]
-    metrics = Metrics.objects(object_id__in=ids,
-                              level='daily', date=day.isoformat())
-    values = [int(metrics.sum('values.{0}'.format(k))) for k in KEYS]
-    Metrics.objects.update_daily(org, day, **dict(zip(keys, values)))
+    Get a sum of all metrics for `dataset_views` on the backend and
+    attach them to `dataset.metrics`.
+    '''
+    log.info('Updating datasets metrics from backend...')
+    client = get_backend_client()
+    query = 'select sum(*) from dataset_views group by dataset;'
+    result = client.query(query)
+    for (_, keys), _values in result.items():
+        values = next(_values)
+        values.pop('time')
+        dataset_id = keys['dataset']
+        dataset = Dataset.objects.filter(id=dataset_id).first()
+        if dataset:
+            log.debug('Found dataset %s: %s', dataset.id, values)
+            dataset.metrics.update(values)
+            dataset.save()
+        else:
+            log.error('Dataset not found - id %s', dataset_id)
 
 
 def upsert_metric_for_resource(resource, dataset, day, data):
