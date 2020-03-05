@@ -7,7 +7,6 @@ from udata.models import User, Organization, Reuse, Dataset
 from .client import analyze
 from .download_counter import DailyDownloadCounter
 from .metrics import (
-    aggregate_datasets_daily, aggregate_reuses_daily,
     upsert_metric_for_dataset, upsert_metric_for_reuse,
     upsert_metric_for_organization, upsert_metric_for_user,
 )
@@ -66,16 +65,12 @@ counter = Counter()
 def on_dataset_display(data, day, dataset, **kwargs):
     if isinstance(dataset, Dataset):
         upsert_metric_for_dataset(dataset, day, data)
-        if dataset.organization:
-            aggregate_datasets_daily(dataset.organization, day)
 
 
 @counter.route('reuses.show')
 def on_reuse_display(data, day, reuse, **kwargs):
     if isinstance(reuse, Reuse):
         upsert_metric_for_reuse(reuse, day, data)
-        if reuse.organization:
-            aggregate_reuses_daily(reuse.organization, day)
 
 
 @counter.route('organizations.show')

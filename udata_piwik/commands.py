@@ -7,6 +7,7 @@ from datetime import date, timedelta
 from udata.commands import cli, success
 
 from .counter import counter
+from .metrics import update_metrics_from_backend
 
 
 log = logging.getLogger(__name__)
@@ -54,3 +55,9 @@ def fill(start, end):
         current_date += timedelta(days=1)
 
     success('Loaded all metrics for the period')
+
+
+@piwik.command()
+def update_metrics():
+    '''Update instance's metrics from backend'''
+    update_metrics_from_backend()
