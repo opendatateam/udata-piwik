@@ -6,10 +6,7 @@ from udata.models import Dataset, CommunityResource
 from udata.utils import hash_url, get_by
 
 from .client import analyze
-from .metrics import (
-    ResourceViews, OrgResourcesDownloads, CommunityResourceViews,
-    upsert_metric_for_day,
-)
+from .metrics import upsert_metric_for_resource
 
 log = logging.getLogger(__name__)
 
@@ -109,16 +106,7 @@ class DailyDownloadCounter(object):
             dataset = item['dataset']
             resource = item['resource']
             log.debug('Found resource download: %s', resource.url)
-            upsert_metric_for_day(resource, self.day, row)
-            metric = ResourceViews(resource)
-            metric.compute()
-            # Use the MongoDB positionnal operator ($)
-            cmd = 'set__resources__S__metrics__{0}'.format(metric.name)
-            qs = Dataset.objects(id=dataset.id,
-                                 resources__id=resource.id)
-            qs.update(**{cmd: metric.value})
-            if dataset.organization:
-                OrgResourcesDownloads(dataset.organization).compute()
+            upsert_metric_for_resource(resource, dataset, self.day, row)
 
     def handle_community_resources_downloads(self):
         for item in self.community_resources:
@@ -126,8 +114,4 @@ class DailyDownloadCounter(object):
             resource = item['resource']
             log.debug('Found community resource download: %s',
                       resource.url)
-            upsert_metric_for_day(resource, self.day, row)
-            metric = CommunityResourceViews(resource)
-            metric.compute()
-            resource.metrics[metric.name] = metric.value
-            resource.save()
+            upsert_metric_for_resource(resource, resource.dataset, self.day, row)
