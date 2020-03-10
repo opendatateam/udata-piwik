@@ -15,8 +15,8 @@ jobs:
           MYSQL_USER: piwik
           MYSQL_PASSWORD: piwik
     environment:
-       BASH_ENV: /root/.bashrc
-       PIWIK_URL: localhost
+      BASH_ENV: /root/.bashrc
+      PIWIK_URL: localhost
     steps:
       - checkout
       - run:
@@ -30,13 +30,13 @@ jobs:
           command: export BASE_BRANCH=$(base_branch)
       - restore_cache:
           keys:
-          - py-cache-v2-{{ arch }}-{{ checksum "python.deps" }}
-          - py-cache-v2-{{ arch }}-{{ .Branch }}
-          - py-cache-v2-{{ arch }}-{{ .Environment.BASE_BRANCH }}
+            - py-cache-v2-{{ arch }}-{{ checksum "python.deps" }}
+            - py-cache-v2-{{ arch }}-{{ .Branch }}
+            - py-cache-v2-{{ arch }}-{{ .Environment.BASE_BRANCH }}
       - run:
           name: Install python dependencies
           command: |
-            virtualenv -ppython3.6 venv
+            virtualenv venv
             source venv/bin/activate
             # Workaround to bad transitive dependencies resolution:
             # Install package first then all other dependencies
@@ -45,11 +45,11 @@ jobs:
       - save_cache:
           key: py-cache-v2-{{ arch }}-{{ checksum "python.deps" }}
           paths:
-          - venv
+            - venv
       - save_cache:
           key: py-cache-v2-{{ arch }}-{{ .Branch }}
           paths:
-          - venv
+            - venv
       - run:
           name: Run tests
           command: |
@@ -85,11 +85,7 @@ jobs:
 
   publish:
     docker:
-<<<<<<< HEAD
       - image: udata/circleci:2-alpine
-=======
-      - image: udata/circleci:py3
->>>>>>> Migrate to python3
     steps:
       - attach_workspace:
           at: .
@@ -101,13 +97,9 @@ jobs:
 
   github:
     docker:
-<<<<<<< HEAD
       - image: udata/circleci:2-alpine
-=======
-      - image: udata/circleci:py3
->>>>>>> Migrate to python3
     environment:
-       BASH_ENV: /root/.bashrc
+      BASH_ENV: /root/.bashrc
     steps:
       - attach_workspace:
           at: .
