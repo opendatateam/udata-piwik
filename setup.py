@@ -81,11 +81,7 @@ setup(
         'Topic :: System :: Software Distribution',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
-<<<<<<< HEAD
         'Programming Language :: Python :: 3.7',
-=======
-        'Programming Language :: Python :: 3.6',
->>>>>>> Migrate to python3
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
 )
