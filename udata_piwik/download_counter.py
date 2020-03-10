@@ -22,9 +22,13 @@ class DailyDownloadCounter(object):
         self.community_resources = []
 
     def count(self):
+        log.debug('Populate rows...')
         self.populate_rows()
+        log.debug('Detect download objects...')
         self.detect_download_objects()
+        log.debug('Handle resources downloads...')
         self.handle_resources_downloads()
+        log.debug('Handle community resource downloads...')
         self.handle_community_resources_downloads()
 
     def get_rows(self, rows):
@@ -41,12 +45,17 @@ class DailyDownloadCounter(object):
             'date': self.day,
             'expanded': 1
         }
+        log.debug('Getting downloads data...')
         self.get_rows(analyze('Actions.getDownloads', **params))
+        log.debug('Getting outlinks data...')
         self.get_rows(analyze('Actions.getOutlinks', **params))
 
     def detect_by_resource_id(self, resource_id, row):
         try:
-            dataset = Dataset.objects.get(resources__id=resource_id)
+            # use filter().first() to avoid double matches errors
+            dataset = Dataset.objects.filter(resources__id=resource_id).first()
+            if not dataset:
+                raise Dataset.DoesNotExist
             resource = get_by(dataset.resources, 'id', uuid.UUID(resource_id))
             self.resources.append({
                 'dataset': dataset,

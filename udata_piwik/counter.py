@@ -27,7 +27,9 @@ class Counter(object):
         return wrapper
 
     def count_for(self, day):
+        log.debug('Counting views...')
         self.count_views(day)
+        log.debug('Counting downloads...')
         dl_counter = DailyDownloadCounter(day)
         dl_counter.count()
 
@@ -38,6 +40,7 @@ class Counter(object):
             'expanded': 1
         }
         for row in analyze('Actions.getPageUrls', **params):
+            log.debug('Got views data...')
             self.handle_views(row, day)
 
     def handle_views(self, row, day):
