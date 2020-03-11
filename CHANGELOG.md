@@ -2,7 +2,8 @@
 
 ## Current (in progress)
 
-- Nothing yet
+- Migrate to python3 🐍 [#68](https://github.com/opendatateam/udata-piwik/pull/68)
+- Migrate footer snippet to the new `footer.snippets` hook [#157](https://github.com/opendatateam/udata-piwik/pull/157)
 
 ## 1.5.1 (2019-12-31)
 

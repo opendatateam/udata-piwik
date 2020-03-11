@@ -1,11 +1,8 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 import logging
 import requests
 
 from datetime import date
-from urllib import urlencode
+from urllib.parse import urlencode
 
 from flask import current_app
 
