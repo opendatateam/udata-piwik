@@ -3,8 +3,7 @@ import uuid
 
 from datetime import date, time, datetime
 
-from flask import current_app
-from influxdb import InfluxDBClient
+from flask import current_app, _app_ctx_stack
 
 from udata.core.dataset.models import Dataset, get_resource
 
@@ -15,8 +14,9 @@ log = logging.getLogger(__name__)
 
 
 def get_backend_client():
-    dsn = current_app.config['METRICS_DSN']
-    return InfluxDBClient(**dsn)
+    ctx = _app_ctx_stack.top
+    if ctx is not None and hasattr(ctx, 'influx_db'):
+        return ctx.influx_db
 
 
 def update_metrics_from_backend():
@@ -36,8 +36,7 @@ def update_resources_metrics_from_backend():
     '''
     log.info('Updating resources metrics from backend...')
     client = get_backend_client()
-    query = 'select sum(*) from resource_views group by resource;'
-    result = client.query(query)
+    result = client.get_views_from_all_datasets()
     for (_, keys), _values in result.items():
         values = next(_values)
         values.pop('time')
@@ -70,8 +69,7 @@ def update_datasets_metrics_from_backend():
     '''
     log.info('Updating datasets metrics from backend...')
     client = get_backend_client()
-    query = 'select sum(*) from dataset_views group by dataset;'
-    result = client.query(query)
+    result = client.get_views_from_all_datasets()
     for (_, keys), _values in result.items():
         values = next(_values)
         values.pop('time')
@@ -173,4 +171,4 @@ def upsert_in_metrics_backend(day=None, metric=None, tags={}, data={}):
         'tags': tags,
         'fields': dict((k, data[k]) for k in KEYS)
     }
-    client.write_points([body])
+    client.insert(body)
