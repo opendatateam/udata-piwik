@@ -3,7 +3,9 @@ import uuid
 
 from datetime import date, time, datetime
 
-from flask import current_app, _app_ctx_stack
+from flask import current_app
+
+from udata_metrics import metrics_client_factory
 
 from udata.core.dataset.models import Dataset, get_resource
 
@@ -11,12 +13,6 @@ KEYS = 'nb_uniq_visitors nb_hits nb_visits'.split()
 
 
 log = logging.getLogger(__name__)
-
-
-def get_backend_client():
-    ctx = _app_ctx_stack.top
-    if ctx is not None and hasattr(ctx, 'influx_db'):
-        return ctx.influx_db
 
 
 def update_metrics_from_backend():
@@ -35,7 +31,7 @@ def update_resources_metrics_from_backend():
     attach them to `resource.metrics`.
     '''
     log.info('Updating resources metrics from backend...')
-    client = get_backend_client()
+    client = metrics_client_factory()
     result = client.get_views_from_all_datasets()
     for (_, keys), _values in result.items():
         values = next(_values)
@@ -68,7 +64,7 @@ def update_datasets_metrics_from_backend():
     attach them to `dataset.metrics`.
     '''
     log.info('Updating datasets metrics from backend...')
-    client = get_backend_client()
+    client = metrics_client_factory()
     result = client.get_views_from_all_datasets()
     for (_, keys), _values in result.items():
         values = next(_values)
@@ -164,7 +160,7 @@ def upsert_in_metrics_backend(day=None, metric=None, tags={}, data={}):
         day = date.fromisoformat(day)
     # we're on a daily basis, but backend is not
     dt = datetime.combine(day or date.today(), time())
-    client = get_backend_client()
+    client = metrics_client_factory()
     body = {
         'time': dt,
         'measurement': metric,
