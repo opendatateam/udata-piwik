@@ -6,7 +6,7 @@ from udata.models import User, Organization, Reuse, Dataset
 
 from .client import analyze
 from .download_counter import DailyDownloadCounter
-from .metrics import (
+from .upsert import (
     upsert_metric_for_dataset, upsert_metric_for_reuse,
     upsert_metric_for_organization, upsert_metric_for_user,
 )

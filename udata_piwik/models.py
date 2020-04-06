@@ -15,8 +15,3 @@ class PiwikTracking(db.Document):
         'indexes': ['date'],
         'ordering': ['date'],
     }
-
-
-class PiwikSyncJobs(db.Document):
-    start_date = db.DateTimeField(required=True, default=datetime.now)
-    end_date = db.DateTimeField()

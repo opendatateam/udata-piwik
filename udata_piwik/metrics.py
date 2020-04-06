@@ -8,6 +8,7 @@ from flask import current_app
 from udata_metrics import metrics_client_factory
 
 from udata.core.dataset.models import Dataset, get_resource
+from udata.models import Reuse, User, Organization
 
 KEYS = 'nb_uniq_visitors nb_hits nb_visits'.split()
 
@@ -21,11 +22,33 @@ def update_metrics_from_backend():
     '''
     update_resources_metrics_from_backend()
     update_datasets_metrics_from_backend()
+    update_reuses_metrics_from_backend()
+    update_organizations_metrics_from_backend()
+    update_users_metrics_from_backend()
+
+
+def update_metrics_from_backend(result, model, model_str):
+    for (_, keys), _values in result.items():
+        values = next(_values)
+        values.pop('time')
+        model_id = keys[model_str]
+        model_result = model.objects.filter(id=model_id).first()
+        if model_result:
+            log.debug(f'Found {model_str} {model_result.id}: {values}')
+            model_result.metrics.update(values)
+            try:
+                # TODO: disable signals
+                model_result.save()
+            except Exception as e:
+                log.exception(e)
+                continue
+        else:
+            log.error(f'{model_str} not found - id {model_id}')
 
 
 def update_resources_metrics_from_backend():
     '''
-    Update resources' metrics from backend.
+    Update resource's metrics from backend.
 
     Get a sum of all metrics for `resource_views` on the backend and
     attach them to `resource.metrics`.
@@ -66,105 +89,43 @@ def update_datasets_metrics_from_backend():
     log.info('Updating datasets metrics from backend...')
     client = metrics_client_factory()
     result = client.get_views_from_all_datasets()
-    for (_, keys), _values in result.items():
-        values = next(_values)
-        values.pop('time')
-        dataset_id = keys['dataset']
-        dataset = Dataset.objects.filter(id=dataset_id).first()
-        if dataset:
-            log.debug('Found dataset %s: %s', dataset.id, values)
-            dataset.metrics.update(values)
-            try:
-                # TODO: disable signals
-                dataset.save()
-            except Exception as e:
-                log.exception(e)
-                continue
-        else:
-            log.error('Dataset not found - id %s', dataset_id)
+    update_metrics_from_backend(Dataset, 'dataset', result)
 
 
-def upsert_metric_for_resource(resource, dataset, day, data):
-    if not dataset:
-        log.error('No dataset linked to resource %s', resource.id)
-        return
-    author_type, author = ('organization', dataset.organization) \
-        if dataset.organization else ('user', dataset.owner)
-    upsert_in_metrics_backend(
-        day=day,
-        metric='resource_views',
-        tags={
-            'author_type': author_type if author else None,
-            'author': author.id if author else None,
-            'dataset': dataset.id,
-            'resource': resource.id,
-        },
-        data=data,
-    )
+def update_reuses_metrics_from_backend():
+    '''
+    Update reuses' metrics from backend.
 
-
-def upsert_metric_for_dataset(dataset, day, data):
-    author_type, author = ('organization', dataset.organization) \
-        if dataset.organization else ('user', dataset.owner)
-    upsert_in_metrics_backend(
-        day=day,
-        metric='dataset_views',
-        tags={
-            'author_type': author_type if author else None,
-            'author': author.id if author else None,
-            'dataset': dataset.id,
-        },
-        data=data,
-    )
-
-
-def upsert_metric_for_reuse(reuse, day, data):
-    author_type, author = ('organization', reuse.organization) \
-        if reuse.organization else ('user', reuse.owner)
-    upsert_in_metrics_backend(
-        day=day,
-        metric='reuse_views',
-        tags={
-            'author_type': author_type if author else None,
-            'author': author.id if author else None,
-            'reuse': reuse.id,
-        },
-        data=data,
-    )
-
-
-def upsert_metric_for_organization(org, day, data):
-    upsert_in_metrics_backend(
-        day=day,
-        metric='organization_views',
-        tags={
-            'organization': org.id,
-        },
-        data=data,
-    )
-
-
-def upsert_metric_for_user(user, day, data):
-    upsert_in_metrics_backend(
-        day=day,
-        metric='user_views',
-        tags={
-            'user': user.id,
-        },
-        data=data,
-    )
-
-
-def upsert_in_metrics_backend(day=None, metric=None, tags={}, data={}):
-    if isinstance(day, str):
-        day = date.fromisoformat(day)
-    # we're on a daily basis, but backend is not
-    dt = datetime.combine(day or date.today(), time())
+    Get a sum of all metrics for `reuse_views` on the backend and
+    attach them to `reuse.metrics`.
+    '''
+    log.info('Updating reuses metrics from backend...')
     client = metrics_client_factory()
-    body = {
-        'time': dt,
-        'measurement': metric,
-        'tags': tags,
-        'fields': dict((k, data[k]) for k in KEYS)
-    }
-    client.insert(body)
+    result = client.get_views_from_all_reuses()
+    update_metrics_from_backend(Reuse, 'reuse', result)
+
+
+def update_organizations_metrics_from_backend():
+    '''
+    Update organizations' metrics from backend.
+
+    Get a sum of all metrics for `organization_views` on the backend and
+    attach them to `organization.metrics`.
+    '''
+    log.info('Updating organizations metrics from backend...')
+    client = metrics_client_factory()
+    result = client.get_views_from_all_organizations()
+    update_metrics_from_backend(Organization, 'organization', result)
+
+
+def update_users_metrics_from_backend():
+    '''
+    Update users' metrics from backend.
+
+    Get a sum of all metrics for `user_views` on the backend and
+    attach them to `user.metrics`.
+    '''
+    log.info('Updating users metrics from backend...')
+    client = metrics_client_factory()
+    result = client.get_views_from_all_users()
+    update_metrics_from_backend(User, 'user', result)
