@@ -2,7 +2,7 @@
 
 ## Current (in progress)
 
-- Nothing yet
+- Do not expect a json response from tracking api [#190](https://github.com/opendatateam/udata-piwik/pull/190)
 
 ## 2.0.0 (2020-03-11)
 
