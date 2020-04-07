@@ -1,3 +1,4 @@
+import json
 import logging
 import requests
 
@@ -106,4 +107,8 @@ def bulk_track(*uris, **kwargs):
                                      settings.PIWIK_TRACK_TIMEOUT)
     resp = requests.post(base_url, json=data, timeout=timeout)
     resp.raise_for_status()
-    return resp.json()
+    try:
+        return resp.json()
+    # sometimes we don't have a JSON response from Matomo (eg QueuedTracking)
+    except json.JSONDecodeError:
+        return {}
