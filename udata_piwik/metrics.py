@@ -17,9 +17,6 @@ log = logging.getLogger(__name__)
 
 
 def update_metrics_from_backend():
-    '''
-    TODO: factorize those fns (maybe class based?)
-    '''
     update_resources_metrics_from_backend()
     update_datasets_metrics_from_backend()
     update_reuses_metrics_from_backend()
@@ -27,18 +24,20 @@ def update_metrics_from_backend():
     update_users_metrics_from_backend()
 
 
-def update_metrics_from_backend(result, model, model_str):
+def process_metrics_result(result, model):
+    model_str = model.__name__.lower()
     for (_, keys), _values in result.items():
         values = next(_values)
         values.pop('time')
         model_id = keys[model_str]
+
         model_result = model.objects.filter(id=model_id).first()
+
         if model_result:
             log.debug(f'Found {model_str} {model_result.id}: {values}')
             model_result.metrics.update(values)
             try:
-                # TODO: disable signals
-                model_result.save()
+                model_result.save(signal_kwargs={'ignores': ['post_save']})
             except Exception as e:
                 log.exception(e)
                 continue
@@ -49,7 +48,6 @@ def update_metrics_from_backend(result, model, model_str):
 def update_resources_metrics_from_backend():
     '''
     Update resource's metrics from backend.
-
     Get a sum of all metrics for `resource_views` on the backend and
     attach them to `resource.metrics`.
     '''
@@ -70,8 +68,7 @@ def update_resources_metrics_from_backend():
             log.debug('Found resource %s: %s', resource.id, values)
             resource.metrics.update(values)
             try:
-                # TODO: disable signals
-                resource.save()
+                resource.save(signal_kwargs={'ignores': ['post_save']})
             except Exception as e:
                 log.exception(e)
                 continue
@@ -89,7 +86,7 @@ def update_datasets_metrics_from_backend():
     log.info('Updating datasets metrics from backend...')
     client = metrics_client_factory()
     result = client.get_views_from_all_datasets()
-    update_metrics_from_backend(Dataset, 'dataset', result)
+    process_metrics_result(result, Dataset)
 
 
 def update_reuses_metrics_from_backend():
@@ -102,7 +99,7 @@ def update_reuses_metrics_from_backend():
     log.info('Updating reuses metrics from backend...')
     client = metrics_client_factory()
     result = client.get_views_from_all_reuses()
-    update_metrics_from_backend(Reuse, 'reuse', result)
+    process_metrics_result(result, Reuse)
 
 
 def update_organizations_metrics_from_backend():
@@ -115,7 +112,7 @@ def update_organizations_metrics_from_backend():
     log.info('Updating organizations metrics from backend...')
     client = metrics_client_factory()
     result = client.get_views_from_all_organizations()
-    update_metrics_from_backend(Organization, 'organization', result)
+    process_metrics_result(result, Organization)
 
 
 def update_users_metrics_from_backend():
@@ -128,4 +125,4 @@ def update_users_metrics_from_backend():
     log.info('Updating users metrics from backend...')
     client = metrics_client_factory()
     result = client.get_views_from_all_users()
-    update_metrics_from_backend(User, 'user', result)
+    process_metrics_result(result, User)
