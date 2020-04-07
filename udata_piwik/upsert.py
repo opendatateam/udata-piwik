@@ -1,3 +1,15 @@
+import logging
+from datetime import date, time, datetime
+
+from udata_metrics import metrics_client_factory
+
+
+KEYS = 'nb_uniq_visitors nb_hits nb_visits'.split()
+
+
+log = logging.getLogger(__name__)
+
+
 def upsert_metric_for_resource(resource, dataset, day, data):
     if not dataset:
         log.error('No dataset linked to resource %s', resource.id)

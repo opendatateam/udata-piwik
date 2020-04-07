@@ -1,16 +1,10 @@
 import logging
 import uuid
 
-from datetime import date, time, datetime
-
-from flask import current_app
-
 from udata_metrics import metrics_client_factory
 
 from udata.core.dataset.models import Dataset, get_resource
 from udata.models import Reuse, User, Organization
-
-KEYS = 'nb_uniq_visitors nb_hits nb_visits'.split()
 
 
 log = logging.getLogger(__name__)
