@@ -6,8 +6,8 @@ from datetime import date, timedelta
 
 from udata.commands import cli, success
 
-from .counter import counter
-from .metrics import update_metrics_from_backend
+from udata_piwik.counter import counter
+from udata_piwik.metrics import update_metrics_from_backend
 
 
 log = logging.getLogger(__name__)

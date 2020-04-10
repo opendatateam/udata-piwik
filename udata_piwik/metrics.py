@@ -1,7 +1,7 @@
 import logging
 import uuid
 
-from udata_metrics import metrics_client_factory
+from udata_metrics.client import metrics_client_factory
 
 from udata.core.dataset.models import Dataset, get_resource
 from udata.models import Reuse, User, Organization

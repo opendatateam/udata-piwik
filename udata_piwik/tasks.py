@@ -9,10 +9,10 @@ from udata.core.dataset.signals import on_dataset_published
 from udata.core.reuse.signals import on_reuse_published
 from udata.core.followers.signals import on_new_follow
 
-from .client import track, bulk_track
-from .counter import counter
-from .models import PiwikTracking
-from .settings import PIWIK_BULK as PIWIK_BULK_DEFAULT
+from udata_piwik.client import track, bulk_track
+from udata_piwik.counter import counter
+from udata_piwik.models import PiwikTracking
+from udata_piwik.settings import PIWIK_BULK as PIWIK_BULK_DEFAULT
 
 
 log = logging.getLogger(__name__)

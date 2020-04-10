@@ -4,13 +4,13 @@ from werkzeug.exceptions import NotFound
 
 from udata.models import User, Organization, Reuse, Dataset
 
-from .client import analyze
-from .download_counter import DailyDownloadCounter
-from .upsert import (
+from udata_piwik.client import analyze
+from udata_piwik.download_counter import DailyDownloadCounter
+from udata_piwik.upsert import (
     upsert_metric_for_dataset, upsert_metric_for_reuse,
     upsert_metric_for_organization, upsert_metric_for_user,
 )
-from .utils import route_from, RouteNotFound
+from udata_piwik.utils import route_from, RouteNotFound
 
 log = logging.getLogger(__name__)
 

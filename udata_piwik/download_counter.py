@@ -5,8 +5,8 @@ import uuid
 from udata.models import Dataset, CommunityResource
 from udata.utils import hash_url, get_by
 
-from .client import analyze
-from .upsert import upsert_metric_for_resource
+from udata_piwik.client import analyze
+from udata_piwik.upsert import upsert_metric_for_resource
 
 log = logging.getLogger(__name__)
 

@@ -1,7 +1,7 @@
 import logging
 from datetime import date, time, datetime
 
-from udata_metrics import metrics_client_factory
+from udata_metrics.client import metrics_client_factory
 
 
 KEYS = 'nb_uniq_visitors nb_hits nb_visits'.split()
