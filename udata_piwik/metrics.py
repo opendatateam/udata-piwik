@@ -29,7 +29,7 @@ def process_metrics_result(result, model):
 
         if model_result:
             log.debug(f'Found {model_str} {model_result.id}: {values}')
-            model_result.metrics.update(values)
+            model_result.metrics['views'] = values['sum_nb_visits']
             try:
                 model_result.save(signal_kwargs={'ignores': ['post_save']})
             except Exception as e:
@@ -60,7 +60,7 @@ def update_resources_metrics_from_backend():
             continue
         if resource:
             log.debug('Found resource %s: %s', resource.id, values)
-            resource.metrics.update(values)
+            resource.metrics['views'] = values['sum_nb_visits']
             try:
                 resource.save(signal_kwargs={'ignores': ['post_save']})
             except Exception as e:

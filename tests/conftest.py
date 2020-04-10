@@ -4,7 +4,7 @@ from udata.settings import Testing
 
 
 class PiwikSettings(Testing):
-    PLUGINS = ['piwik']
+    PLUGINS = ['piwik', 'metrics']
     PIWIK_ID_FRONT = 1
     PIWIK_ID_API = 2
     PIWIK_URL = os.environ.get('PIWIK_URL', 'localhost:8080')

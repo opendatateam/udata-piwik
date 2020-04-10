@@ -18,6 +18,7 @@ from udata_metrics.client import metrics_client_factory
 
 from udata_piwik.counter import counter
 from udata_piwik.upsert import upsert_metric_for_resource
+from udata_piwik.metrics import update_resources_metrics_from_backend, update_datasets_metrics_from_backend
 
 from .conftest import PiwikSettings
 from .client import visit, has_data, reset, download
@@ -145,33 +146,36 @@ def fixtures(app, reset_piwik, dataset_resource, organization,
 
 
 def test_dataset_metric(fixtures):
-    client = metrics_client_factory()
-    result = client.get_views_from_specific_model('dataset', fixtures['dataset'].id)
+    metrics_client = metrics_client_factory()
+    result = metrics_client.get_views_from_specific_model('dataset', fixtures['dataset'].id)
     values = next(result.get_points())
 
     assert values['nb_hits'] == 2
     assert values['nb_uniq_visitors'] == 1
     assert values['nb_visits'] == 1
 
+    update_datasets_metrics_from_backend()
     fixtures['dataset'].reload()
     assert fixtures['dataset'].get_metrics()['views'] == 1
 
 
 def test_resource_metric(fixtures):
-    client = metrics_client_factory()
-    result = client.get_views_from_specific_model('resource', fixtures['dataset'].id)
+    metrics_client = metrics_client_factory()
+    result = metrics_client.get_views_from_specific_model('resource', fixtures['resource'].id)
     values = next(result.get_points())
     # 1 hit on permalink, 1 on url
     assert values['nb_hits'] == 2
     assert values['nb_uniq_visitors'] == 2
     assert values['nb_visits'] == 2
 
+    update_resources_metrics_from_backend()
     fixtures['dataset'].reload()
     resource = fixtures['dataset'].resources[0]
     assert resource.get_metrics()['views'] == 2
 
 
 def test_resource_metric_with_previous_data(fixtures):
+    update_resources_metrics_from_backend()
     fixtures['dataset_w_previous_data'].reload()
     resource = fixtures['dataset_w_previous_data'].resources[0]
     assert resource.get_metrics()['views'] == 17
