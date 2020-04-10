@@ -8,6 +8,11 @@ jobs:
       - image: circleci/mongo:3.6-stretch-ram
       - image: redis:alpine
       - image: udata/elasticsearch:2.4.5
+      - image: influxdb:alpine
+        environment:
+          INFLUXDB_DB: piwik_db
+          INFLUXDB_USER: piwik
+          INFLUXDB_USER_PASSWORD: piwik
       - image: udata/piwik-test
         environment:
           MYSQL_ROOT_PASSWORD: piwik

@@ -17,3 +17,10 @@ class PiwikSettings(Testing):
         'RESOURCE_DOWNLOAD': 5,
         'RESOURCE_REDIRECT': 6,
     }
+    METRICS_DSN = {
+        'host': 'localhost',
+        'port': '8086',
+        'username': 'piwik',
+        'password': 'piwik',
+        'database': 'piwik_db'
+    }

@@ -9,3 +9,13 @@ services:
       MYSQL_DATABASE: piwik
       MYSQL_USER: piwik
       MYSQL_PASSWORD: piwik
+  influx:
+    image: influxdb:alpine
+    ports:
+      - "8086:8086"
+    environment:
+      INFLUXDB_DB: piwik_db
+      INFLUXDB_ADMIN_USER: piwik_admin
+      INFLUXDB_ADMIN_PASSWORD: piwik_admin
+      INFLUXDB_USER: piwik
+      INFLUXDB_USER_PASSWORD: piwik

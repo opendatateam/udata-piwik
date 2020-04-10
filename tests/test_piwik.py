@@ -14,6 +14,8 @@ from udata.core.user.factories import UserFactory
 
 from udata.tests.plugin import drop_db
 
+from udata_metrics.client import metrics_client_factory
+
 from udata_piwik.counter import counter
 from udata_piwik.upsert import upsert_metric_for_resource
 
@@ -142,34 +144,15 @@ def fixtures(app, reset_piwik, dataset_resource, organization,
     }
 
 
-def test_objects_have_metrics(fixtures):
-    # XXX is this list exhaustive?
-    metrics_dataset = fixtures['dataset'].get_metrics()
-    print(metrics_dataset)
-    assert False
-    # metrics_dataset = Metrics.objects.get_for(fixtures['dataset'])
-    # assert len(metrics_dataset) == 1
-    # metrics_org = Metrics.objects.get_for(fixtures['organization'])
-    # assert len(metrics_org) == 1
-    # metrics_user = Metrics.objects.get_for(fixtures['user'])
-    # assert len(metrics_user) == 1
-    # metrics_reuse = Metrics.objects.get_for(fixtures['reuse'])
-    # assert len(metrics_reuse) == 1
-    # metrics_resource = Metrics.objects.get_for(fixtures['resource'])
-    # assert len(metrics_resource) == 1
-    # metrics_comres = Metrics.objects.get_for(fixtures['community_resource'])
-    # assert len(metrics_comres) == 1
-
-
-# def test_dataset_metric(fixtures):
-#     metrics_dataset = Metrics.objects.get_for(fixtures['dataset'])
-#     metric = metrics_dataset[0]
-#     assert metric.level == 'daily'
-#     assert metric.date == date.today().isoformat()
-#     assert metric.values == {'nb_hits': 2, 'nb_uniq_visitors': 1,
-#         'nb_visits': 1}
-#     fixtures['dataset'].reload()
-#     assert fixtures['dataset'].metrics['views'] == 1
+def test_dataset_metric(fixtures):
+    client = metrics_client_factory()
+    result = client.get_views_from_specific_model('dataset', fixtures['dataset'].id)
+    values = next(result.get_points())
+    assert values['nb_hits'] == 2
+    assert values['nb_uniq_visitors'] == 1
+    assert values['nb_visits'] == 1
+    fixtures['dataset'].reload()
+    assert fixtures['dataset'].get_metrics()['views'] == 1
 
 
 # def test_resource_metric(fixtures):

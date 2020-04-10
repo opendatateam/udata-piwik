@@ -47,7 +47,7 @@ def update_resources_metrics_from_backend():
     '''
     log.info('Updating resources metrics from backend...')
     client = metrics_client_factory()
-    result = client.get_views_from_all_datasets()
+    result = client.get_views_from_all_resources()
     for (_, keys), _values in result.items():
         values = next(_values)
         values.pop('time')
