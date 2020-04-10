@@ -148,30 +148,33 @@ def test_dataset_metric(fixtures):
     client = metrics_client_factory()
     result = client.get_views_from_specific_model('dataset', fixtures['dataset'].id)
     values = next(result.get_points())
+
     assert values['nb_hits'] == 2
     assert values['nb_uniq_visitors'] == 1
     assert values['nb_visits'] == 1
+
     fixtures['dataset'].reload()
     assert fixtures['dataset'].get_metrics()['views'] == 1
 
 
-# def test_resource_metric(fixtures):
-#     metrics_resource = Metrics.objects.get_for(fixtures['resource'])
-#     metric = metrics_resource[0]
-#     assert metric.level == 'daily'
-#     assert metric.date == date.today().isoformat()
-#     # 1 hit on permalink, 1 on url
-#     assert metric.values == {'nb_hits': 2, 'nb_uniq_visitors': 2,
-#         'nb_visits': 2}
-#     fixtures['dataset'].reload()
-#     resource = fixtures['dataset'].resources[0]
-#     assert resource.metrics == {'views': 2}
+def test_resource_metric(fixtures):
+    client = metrics_client_factory()
+    result = client.get_views_from_specific_model('resource', fixtures['dataset'].id)
+    values = next(result.get_points())
+    # 1 hit on permalink, 1 on url
+    assert values['nb_hits'] == 2
+    assert values['nb_uniq_visitors'] == 2
+    assert values['nb_visits'] == 2
+
+    fixtures['dataset'].reload()
+    resource = fixtures['dataset'].resources[0]
+    assert resource.get_metrics()['views'] == 2
 
 
-# def test_resource_metric_with_previous_data(fixtures):
-#     fixtures['dataset_w_previous_data'].reload()
-#     resource = fixtures['dataset_w_previous_data'].resources[0]
-#     assert resource.metrics == {'views': 17}
+def test_resource_metric_with_previous_data(fixtures):
+    fixtures['dataset_w_previous_data'].reload()
+    resource = fixtures['dataset_w_previous_data'].resources[0]
+    assert resource.get_metrics()['views'] == 17
 
 
 # def test_community_resource_metric(fixtures):
@@ -183,7 +186,7 @@ def test_dataset_metric(fixtures):
 #     assert metric.values == {'nb_hits': 2, 'nb_uniq_visitors': 2,
 #         'nb_visits': 2}
 #     fixtures['community_resource'].reload()
-#     assert fixtures['community_resource'].metrics['views'] == 2
+#     assert fixtures['community_resource'].get_metrics()['views'] == 2
 
 
 # def test_two_datasets_one_resource_url(fixtures):
