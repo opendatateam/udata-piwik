@@ -132,6 +132,7 @@ def fixtures(app, reset_piwik, dataset_resource, organization,
     dataset, resource = dataset_resource
     d_w_previous_data, r_w_previous_data = dataset_resource_w_previous_data
     return {
+        'app': app,
         'dataset': dataset,
         'organization': organization,
         'resource': resource,
@@ -175,6 +176,7 @@ def test_resource_metric(fixtures):
 
 
 def test_resource_metric_with_previous_data(fixtures):
+    update_datasets_metrics_from_backend()
     update_resources_metrics_from_backend()
     fixtures['dataset_w_previous_data'].reload()
     resource = fixtures['dataset_w_previous_data'].resources[0]
