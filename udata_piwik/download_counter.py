@@ -6,7 +6,7 @@ from udata.models import Dataset, CommunityResource
 from udata.utils import hash_url, get_by
 
 from udata_piwik.client import analyze
-from udata_piwik.upsert import upsert_metric_for_resource
+from udata_piwik.upsert import upsert_metric_for_resource, upsert_metric_for_community_resource
 
 log = logging.getLogger(__name__)
 
@@ -61,6 +61,7 @@ class DailyDownloadCounter(object):
                 'dataset': dataset,
                 'resource': resource,
                 'data': row,
+                'latest': True,
             })
         except Dataset.DoesNotExist:
             try:
@@ -68,6 +69,7 @@ class DailyDownloadCounter(object):
                 self.community_resources.append({
                     'resource': resource,
                     'data': row,
+                    'latest': True,
                 })
             except CommunityResource.DoesNotExist:
                 log.error('No object found for resource_id %s' % resource_id)
@@ -114,13 +116,15 @@ class DailyDownloadCounter(object):
             row = item['data']
             dataset = item['dataset']
             resource = item['resource']
+            latest = item.get('latest', False)
             log.debug('Found resource download: %s', resource.url)
-            upsert_metric_for_resource(resource, dataset, self.day, row)
+            upsert_metric_for_resource(resource, dataset, self.day, row, latest)
 
     def handle_community_resources_downloads(self):
         for item in self.community_resources:
             row = item['data']
             resource = item['resource']
+            latest = item.get('latest', False)
             log.debug('Found community resource download: %s',
                       resource.url)
-            upsert_metric_for_resource(resource, resource.dataset, self.day, row)
+            upsert_metric_for_community_resource(resource, resource.dataset, self.day, row, latest)

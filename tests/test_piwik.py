@@ -18,7 +18,7 @@ from udata_metrics.client import metrics_client_factory
 
 from udata_piwik.counter import counter
 from udata_piwik.upsert import upsert_metric_for_resource
-from udata_piwik.metrics import update_resources_metrics_from_backend, update_datasets_metrics_from_backend
+from udata_piwik.metrics import update_resources_metrics_from_backend, update_datasets_metrics_from_backend, update_community_resources_metrics_from_backend
 
 from .conftest import PiwikSettings
 from .client import visit, has_data, reset, download
@@ -162,12 +162,13 @@ def test_dataset_metric(fixtures):
 
 def test_resource_metric(fixtures):
     metrics_client = metrics_client_factory()
-    result = metrics_client.get_views_from_specific_model('resource', fixtures['resource'].id)
+    result = metrics_client.sum_views_from_specific_ressources(fixtures['resource'].id)
+
     values = next(result.get_points())
     # 1 hit on permalink, 1 on url
-    assert values['nb_hits'] == 2
-    assert values['nb_uniq_visitors'] == 2
-    assert values['nb_visits'] == 2
+    assert values['sum_nb_hits'] == 2
+    assert values['sum_nb_uniq_visitors'] == 2
+    assert values['sum_nb_visits'] == 2
 
     update_resources_metrics_from_backend()
     fixtures['dataset'].reload()
@@ -183,28 +184,35 @@ def test_resource_metric_with_previous_data(fixtures):
     assert resource.get_metrics()['views'] == 17
 
 
-# def test_community_resource_metric(fixtures):
-#     metrics_resource = Metrics.objects.get_for(fixtures['community_resource'])
-#     metric = metrics_resource[0]
-#     assert metric.level == 'daily'
-#     assert metric.date == date.today().isoformat()
-#     # 1 hit on permalink, 1 on url
-#     assert metric.values == {'nb_hits': 2, 'nb_uniq_visitors': 2,
-#         'nb_visits': 2}
-#     fixtures['community_resource'].reload()
-#     assert fixtures['community_resource'].get_metrics()['views'] == 2
+def test_community_resource_metric(fixtures):
+    metrics_client = metrics_client_factory()
+    result = metrics_client.sum_views_from_specific_com_ressources(fixtures['community_resource'].id)
+
+    values = next(result.get_points())
+    assert values['sum_nb_hits'] == 2
+    assert values['sum_nb_uniq_visitors'] == 2
+    assert values['sum_nb_visits'] == 2
+    
+    update_community_resources_metrics_from_backend()
+    fixtures['community_resource'].reload()
+    assert fixtures['community_resource'].get_metrics()['views'] == 2
 
 
-# def test_two_datasets_one_resource_url(fixtures):
-#     (d1, d2), (r1, r2) = fixtures['two_datasets_one_resource_url']
-#     metrics_r1 = Metrics.objects.get_for(r1)
-#     assert len(metrics_r1) == 1
-#     metrics_r2 = Metrics.objects.get_for(r2)
-#     assert len(metrics_r2) == 1
-#     # hit once by resource_1 hashed_url, never by resource_2 latest url rid
-#     assert metrics_r1[0].values == {'nb_hits': 1, 'nb_uniq_visitors': 1,
-#         'nb_visits': 1}
-#     # hit once by resource_1 hashed_url and once by latest url resource id
-#     # ideally this should be only one but impossible to tell
-#     assert metrics_r2[0].values == {'nb_hits': 2, 'nb_uniq_visitors': 2,
-#         'nb_visits': 2}
+def test_two_datasets_one_resource_url(fixtures):
+    (d1, d2), (r1, r2) = fixtures['two_datasets_one_resource_url']
+
+    metrics_client = metrics_client_factory()
+
+    result_r1 = metrics_client.sum_views_from_specific_ressources(r1.id)
+    values_r1 = next(result_r1.get_points())
+
+    result_r2 = metrics_client.sum_views_from_specific_ressources(r2.id)
+    values_r2 = next(result_r2.get_points())
+
+    assert values_r1['sum_nb_hits'] == 1
+    assert values_r1['sum_nb_uniq_visitors'] == 1
+    assert values_r1['sum_nb_visits'] == 1
+
+    assert values_r2['sum_nb_hits'] == 2
+    assert values_r2['sum_nb_uniq_visitors'] == 2
+    assert values_r2['sum_nb_visits'] == 2

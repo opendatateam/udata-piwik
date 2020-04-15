@@ -3,7 +3,7 @@ import uuid
 
 from udata_metrics.client import metrics_client_factory
 
-from udata.core.dataset.models import Dataset, get_resource
+from udata.core.dataset.models import Dataset, get_resource, CommunityResource
 from udata.models import Reuse, User, Organization
 
 
@@ -11,8 +11,9 @@ log = logging.getLogger(__name__)
 
 
 def update_metrics_from_backend():
-    update_resources_metrics_from_backend()
     update_datasets_metrics_from_backend()
+    update_resources_metrics_from_backend()
+    update_community_resources_metrics_from_backend()
     update_reuses_metrics_from_backend()
     update_organizations_metrics_from_backend()
     update_users_metrics_from_backend()
@@ -68,6 +69,18 @@ def update_resources_metrics_from_backend():
                 continue
         else:
             log.error('Resource not found - id %s', resource_id)
+
+
+def update_community_resources_metrics_from_backend():
+    '''
+    Update community resource's metrics from backend.
+    Get a sum of all metrics for `community_resource_views` on the backend and
+    attach them to `community_resource.metrics`.
+    '''
+    log.info('Updating community resources metrics from backend...')
+    client = metrics_client_factory()
+    result = client.get_views_from_all_community_resources()
+    process_metrics_result(result, CommunityResource)
 
 
 def update_datasets_metrics_from_backend():
