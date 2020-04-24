@@ -1,6 +1,6 @@
 # Changelog
 
-## Current (in progress)
+## 2.0.2 (2020-04-24)
 
 - [fix] Do not expect a json response from tracking api [#192](https://github.com/opendatateam/udata-piwik/pull/190)
 
