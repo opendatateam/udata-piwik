@@ -1,7 +1,7 @@
-import json
 import logging
 import requests
 
+from simplejson.errors import JSONDecodeError
 from datetime import date
 from urllib.parse import urlencode
 
@@ -110,5 +110,5 @@ def bulk_track(*uris, **kwargs):
     try:
         return resp.json()
     # sometimes we don't have a JSON response from Matomo (eg QueuedTracking)
-    except json.JSONDecodeError:
+    except JSONDecodeError:
         return {}
