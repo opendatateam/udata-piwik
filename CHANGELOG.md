@@ -2,7 +2,7 @@
 
 ## Current (in progress)
 
-- Changed metrics system. The are now wrote in influxDB [#185](https://github.com/opendatateam/udata-piwik/pull/185)
+- Changed metrics system. They are now stored in influxDB [#185](https://github.com/opendatateam/udata-piwik/pull/185)
 
 ## 2.0.2 (2020-04-24)
 
