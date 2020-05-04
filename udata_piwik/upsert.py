@@ -97,7 +97,7 @@ def upsert_metric_for_user(user, day, data):
         day=day,
         metric='user_views',
         tags={
-            'user': user.id,
+            'user_view': user.id,
         },
         data=data,
     )
