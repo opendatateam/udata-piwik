@@ -132,4 +132,20 @@ def update_users_metrics_from_backend():
     log.info('Updating users metrics from backend...')
     client = metrics_client_factory()
     result = client.get_views_from_all_users()
-    process_metrics_result(result, User)
+    for (_, keys), _values in result.items():
+        values = next(_values)
+        values.pop('time')
+        user_id = keys['user_view']
+
+        user = User.objects.filter(id=user_id).first()
+
+        if user:
+            log.debug(f'Found user {user.id}: {values}')
+            user.metrics['views'] = values['sum_nb_visits']
+            try:
+                user.save(signal_kwargs={'ignores': ['post_save']})
+            except Exception as e:
+                log.exception(e)
+                continue
+        else:
+            log.error(f'user not found - id {user_id}')
