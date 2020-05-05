@@ -12,10 +12,17 @@ from udata.core.followers.signals import on_new_follow
 from udata_piwik.client import track, bulk_track
 from udata_piwik.counter import counter
 from udata_piwik.models import PiwikTracking
+from udata_piwik.metrics import update_metrics_from_backend
 from udata_piwik.settings import PIWIK_BULK as PIWIK_BULK_DEFAULT
 
 
 log = logging.getLogger(__name__)
+
+
+@job('piwik-update-metrics', route='low.piwik')
+def piwik_update_metrics(self):
+    '''Update udata objects metrics'''
+    update_metrics_from_backend()
 
 
 @job('piwik-current-metrics', route='low.piwik')
