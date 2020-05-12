@@ -1,6 +1,6 @@
 # Changelog
 
-## Current (in progress)
+## 2.1.0 (2020-05-12)
 
 - Changed metrics system [#185](https://github.com/opendatateam/udata-piwik/pull/185):
   - Metrics are now stored into InfluxDB before being injected in udata's objects
