@@ -1,5 +1,9 @@
 # Changelog
 
+## Current (in progress)
+
+- Nothing yet
+
 ## 2.1.0 (2020-05-12)
 
 - Changed metrics system [#185](https://github.com/opendatateam/udata-piwik/pull/185):
