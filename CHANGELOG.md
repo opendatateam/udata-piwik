@@ -3,9 +3,10 @@
 ## Current (in progress)
 
 - Changed metrics system [#185](https://github.com/opendatateam/udata-piwik/pull/185):
-  - Metrics are now stored into InfluxDB before being injected in udata's objects.
+  - Metrics are now stored into InfluxDB before being injected in udata's objects
   - Udata piwik accesses influxDB throught [udata-metrics](https://github.com/opendatateam/udata-metrics)
-  - For the metrics injection, a periodic job needs to be scheduled, and a command was added to trigger it manually
+  - The periodic job `piwik-update-metrics` needs to be scheduled in addition to existing jobs, in order to retrieve the views metrics in udata's objects
+  - The command `update-metrics` was added to trigger the metrics injection manually
 
 ## 2.0.2 (2020-04-24)
 
