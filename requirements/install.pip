@@ -1,2 +1,2 @@
-udata>=2.0.0.dev
-udata-metrics>=0.1.1.dev
+udata>=2.1.0
+udata-metrics>=1.0.0
