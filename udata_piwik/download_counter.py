@@ -5,11 +5,8 @@ import uuid
 from udata.models import Dataset, CommunityResource
 from udata.utils import hash_url, get_by
 
-from .client import analyze
-from .metrics import (
-    ResourceViews, OrgResourcesDownloads, CommunityResourceViews,
-    upsert_metric_for_day,
-)
+from udata_piwik.client import analyze
+from udata_piwik.upsert import upsert_metric_for_resource, upsert_metric_for_community_resource
 
 log = logging.getLogger(__name__)
 
@@ -25,9 +22,13 @@ class DailyDownloadCounter(object):
         self.community_resources = []
 
     def count(self):
+        log.debug('Populate rows...')
         self.populate_rows()
+        log.debug('Detect download objects...')
         self.detect_download_objects()
+        log.debug('Handle resources downloads...')
         self.handle_resources_downloads()
+        log.debug('Handle community resource downloads...')
         self.handle_community_resources_downloads()
 
     def get_rows(self, rows):
@@ -44,17 +45,23 @@ class DailyDownloadCounter(object):
             'date': self.day,
             'expanded': 1
         }
+        log.debug('Getting downloads data...')
         self.get_rows(analyze('Actions.getDownloads', **params))
+        log.debug('Getting outlinks data...')
         self.get_rows(analyze('Actions.getOutlinks', **params))
 
     def detect_by_resource_id(self, resource_id, row):
         try:
-            dataset = Dataset.objects.get(resources__id=resource_id)
+            # use filter().first() to avoid double matches errors
+            dataset = Dataset.objects.filter(resources__id=resource_id).first()
+            if not dataset:
+                raise Dataset.DoesNotExist
             resource = get_by(dataset.resources, 'id', uuid.UUID(resource_id))
             self.resources.append({
                 'dataset': dataset,
                 'resource': resource,
                 'data': row,
+                'latest': True,
             })
         except Dataset.DoesNotExist:
             try:
@@ -62,6 +69,7 @@ class DailyDownloadCounter(object):
                 self.community_resources.append({
                     'resource': resource,
                     'data': row,
+                    'latest': True,
                 })
             except CommunityResource.DoesNotExist:
                 log.error('No object found for resource_id %s' % resource_id)
@@ -108,26 +116,15 @@ class DailyDownloadCounter(object):
             row = item['data']
             dataset = item['dataset']
             resource = item['resource']
+            latest = item.get('latest', False)
             log.debug('Found resource download: %s', resource.url)
-            upsert_metric_for_day(resource, self.day, row)
-            metric = ResourceViews(resource)
-            metric.compute()
-            # Use the MongoDB positionnal operator ($)
-            cmd = 'set__resources__S__metrics__{0}'.format(metric.name)
-            qs = Dataset.objects(id=dataset.id,
-                                 resources__id=resource.id)
-            qs.update(**{cmd: metric.value})
-            if dataset.organization:
-                OrgResourcesDownloads(dataset.organization).compute()
+            upsert_metric_for_resource(resource, dataset, self.day, row, latest)
 
     def handle_community_resources_downloads(self):
         for item in self.community_resources:
             row = item['data']
             resource = item['resource']
+            latest = item.get('latest', False)
             log.debug('Found community resource download: %s',
                       resource.url)
-            upsert_metric_for_day(resource, self.day, row)
-            metric = CommunityResourceViews(resource)
-            metric.compute()
-            resource.metrics[metric.name] = metric.value
-            resource.save()
+            upsert_metric_for_community_resource(resource, resource.dataset, self.day, row, latest)

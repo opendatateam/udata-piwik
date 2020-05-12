@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 import factory
 
 from bson import ObjectId
@@ -8,7 +5,7 @@ from bson import ObjectId
 from udata.factories import ModelFactory
 from udata.utils import faker
 
-from .models import PiwikTracking
+from udata_piwik.models import PiwikTracking
 
 
 class PiwikTrackingFactory(ModelFactory):

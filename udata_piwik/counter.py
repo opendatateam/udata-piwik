@@ -4,14 +4,13 @@ from werkzeug.exceptions import NotFound
 
 from udata.models import User, Organization, Reuse, Dataset
 
-from .client import analyze
-from .download_counter import DailyDownloadCounter
-from .metrics import (
-    DatasetViews, ReuseViews, OrganizationViews, UserViews, OrgDatasetsViews,
-    OrgReusesViews, aggregate_datasets_daily, aggregate_reuses_daily,
-    upsert_metric_for_day, clear_metrics_for_day,
+from udata_piwik.client import analyze
+from udata_piwik.download_counter import DailyDownloadCounter
+from udata_piwik.upsert import (
+    upsert_metric_for_dataset, upsert_metric_for_reuse,
+    upsert_metric_for_organization, upsert_metric_for_user,
 )
-from .utils import is_today, route_from, RouteNotFound
+from udata_piwik.utils import route_from, RouteNotFound
 
 log = logging.getLogger(__name__)
 
@@ -28,8 +27,9 @@ class Counter(object):
         return wrapper
 
     def count_for(self, day):
-        clear_metrics_for_day(day)
+        log.debug('Counting views...')
         self.count_views(day)
+        log.debug('Counting downloads...')
         dl_counter = DailyDownloadCounter(day)
         dl_counter.count()
 
@@ -40,6 +40,7 @@ class Counter(object):
             'expanded': 1
         }
         for row in analyze('Actions.getPageUrls', **params):
+            log.debug('Got views data...')
             self.handle_views(row, day)
 
     def handle_views(self, row, day):
@@ -66,52 +67,22 @@ counter = Counter()
 @counter.route('datasets.show')
 def on_dataset_display(data, day, dataset, **kwargs):
     if isinstance(dataset, Dataset):
-        upsert_metric_for_day(dataset, day, data)
-        if is_today(day):
-            try:
-                dataset.save()
-            except Exception:
-                log.exception('Unable to save dataset %s', dataset.id)
-        DatasetViews(dataset).compute()
-        if dataset.organization:
-            OrgDatasetsViews(dataset.organization).compute()
-            aggregate_datasets_daily(dataset.organization, day)
+        upsert_metric_for_dataset(dataset, day, data)
 
 
 @counter.route('reuses.show')
 def on_reuse_display(data, day, reuse, **kwargs):
     if isinstance(reuse, Reuse):
-        upsert_metric_for_day(reuse, day, data)
-        if is_today(day):
-            try:
-                reuse.save()
-            except Exception:
-                log.exception('Unable to save reuse %s', reuse.id)
-        ReuseViews(reuse).compute()
-        if reuse.organization:
-            OrgReusesViews(reuse.organization).compute()
-            aggregate_reuses_daily(reuse.organization, day)
+        upsert_metric_for_reuse(reuse, day, data)
 
 
 @counter.route('organizations.show')
 def on_org_display(data, day, org, **kwargs):
     if isinstance(org, Organization):
-        upsert_metric_for_day(org, day, data)
-        if is_today(day):
-            try:
-                org.save()
-            except Exception:
-                log.exception('Unable to save organization %s', org.id)
-        OrganizationViews(org).compute()
+        upsert_metric_for_organization(org, day, data)
 
 
 @counter.route('users.show')
 def on_user_display(data, day, user, **kwargs):
     if isinstance(user, User):
-        upsert_metric_for_day(user, day, data)
-        if is_today(day):
-            try:
-                user.save()
-            except Exception:
-                log.exception('Unable to save user %s', user.id)
-        UserViews(user).compute()
+        upsert_metric_for_user(user, day, data)

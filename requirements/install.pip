@@ -1,1 +1,2 @@
-udata>=2.0.0
+udata>=2.1.0
+udata-metrics>=1.0.0
