@@ -2,7 +2,7 @@
 
 ## Current (in progress)
 
-- Nothing yet
+- Remove object's id in error log message in order to have a cleaner message [#195](https://github.com/opendatateam/udata-piwik/pull/195)
 
 ## 2.1.0 (2020-05-12)
 
