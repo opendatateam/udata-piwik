@@ -37,7 +37,9 @@ def process_metrics_result(result, model):
                 log.exception(e)
                 continue
         else:
-            log.error(f'{model_str} not found - id {model_id}')
+            log.error(f'{model_str} not found', extra={
+                'id': model_id
+            })
 
 
 def update_resources_metrics_from_backend():
@@ -60,7 +62,7 @@ def update_resources_metrics_from_backend():
             log.exception(e)
             continue
         if resource:
-            log.debug('Found resource %s: %s', resource.id, values)
+            log.debug(f'Found resource {resource.id}: {values}')
             resource.metrics['views'] = values['sum_nb_visits']
             try:
                 resource.save(signal_kwargs={'ignores': ['post_save']})
@@ -68,7 +70,9 @@ def update_resources_metrics_from_backend():
                 log.exception(e)
                 continue
         else:
-            log.error('Resource not found - id %s', resource_id)
+            log.error('Resource not found', extra={
+                'id': resource_id
+            })
 
 
 def update_community_resources_metrics_from_backend():
@@ -148,4 +152,6 @@ def update_users_metrics_from_backend():
                 log.exception(e)
                 continue
         else:
-            log.error(f'user not found - id {user_id}')
+            log.error('user not found', extra={
+                'id': user_id
+            })
