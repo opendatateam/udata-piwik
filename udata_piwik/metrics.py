@@ -29,14 +29,12 @@ def process_metrics_result(client, result, model):
         except KeyError:
             model_id = keys['user_view']
 
-        if model_str == 'communityresource':
-            (_, keys), _specific_values = client.sum_views_from_specific_com_ressource(model_id)
-        elif model_str == 'user':
-            (_, keys), _specific_values = client.sum_views_from_specific_user(model_id)
-        else:
-            (_, keys), _specific_values = client.sum_views_from_specific_model(model_str, model_id)
+        specific_result = client.sum_views_from_specific_model(
+            collection='community_resource' if model_str == 'communityresource' else model_str,
+            tag='user_view' if model_str == 'user' else model_str,
+            model_id=model_id)
 
-        specific_values = next(_specific_values)
+        specific_values = next(specific_result.get_points())
 
         model_result = model.objects.filter(id=model_id).first()
 
@@ -62,14 +60,17 @@ def update_resources_metrics_from_backend():
     '''
     log.info('Updating resources metrics from backend...')
     client = metrics_client_factory()
-    result = client.get_views_from_all_resources()
+    result = client.get_previous_day_measurements(collection='resource', tag='resource')
     for (_, keys), _values in result.items():
         values = next(_values)
         values.pop('time')
         resource_id = keys['resource']
 
-        (_, keys), _specific_values = client.sum_views_from_specific_ressource(resource_id)
-        specific_values = next(_specific_values)
+        specific_result = client.sum_views_from_specific_model(
+            collection='resource',
+            tag='resource',
+            model_id=resource_id)
+        specific_values = next(specific_result.get_points())
 
         try:
             resource_id = uuid.UUID(resource_id)
@@ -99,7 +100,7 @@ def update_community_resources_metrics_from_backend():
     '''
     log.info('Updating community resources metrics from backend...')
     client = metrics_client_factory()
-    result = client.get_views_from_all_community_resources()
+    result = client.get_previous_day_measurements(collection='community_resource', tag='communityresource')
     process_metrics_result(client, result, CommunityResource)
 
 
@@ -112,7 +113,7 @@ def update_datasets_metrics_from_backend():
     '''
     log.info('Updating datasets metrics from backend...')
     client = metrics_client_factory()
-    result = client.get_views_from_all_datasets()
+    result = client.get_previous_day_measurements(collection='dataset', tag='dataset')
     process_metrics_result(client, result, Dataset)
 
 
@@ -125,7 +126,7 @@ def update_reuses_metrics_from_backend():
     '''
     log.info('Updating reuses metrics from backend...')
     client = metrics_client_factory()
-    result = client.get_views_from_all_reuses()
+    result = client.get_previous_day_measurements(collection='reuse', tag='reuse')
     process_metrics_result(client, result, Reuse)
 
 
@@ -138,7 +139,7 @@ def update_organizations_metrics_from_backend():
     '''
     log.info('Updating organizations metrics from backend...')
     client = metrics_client_factory()
-    result = client.get_views_from_all_organizations()
+    result = client.get_previous_day_measurements(collection='organization', tag='organization')
     process_metrics_result(client, result, Organization)
 
 
@@ -151,5 +152,5 @@ def update_users_metrics_from_backend():
     '''
     log.info('Updating users metrics from backend...')
     client = metrics_client_factory()
-    result = client.get_views_from_all_users()
+    result = client.get_previous_day_measurements(collection='user', tag='user_view')
     process_metrics_result(client, result, User)

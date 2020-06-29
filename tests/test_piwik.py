@@ -148,12 +148,12 @@ def fixtures(app, reset_piwik, dataset_resource, organization,
 
 def test_dataset_metric(fixtures):
     metrics_client = metrics_client_factory()
-    result = metrics_client.get_views_from_specific_model('dataset', fixtures['dataset'].id)
+    result = metrics_client.sum_views_from_specific_model('dataset', 'dataset', fixtures['dataset'].id)
     values = next(result.get_points())
 
-    assert values['nb_hits'] == 2
-    assert values['nb_uniq_visitors'] == 1
-    assert values['nb_visits'] == 1
+    assert values['sum_nb_hits'] == 2
+    assert values['sum_nb_uniq_visitors'] == 1
+    assert values['sum_nb_visits'] == 1
 
     update_datasets_metrics_from_backend()
     fixtures['dataset'].reload()
@@ -162,7 +162,7 @@ def test_dataset_metric(fixtures):
 
 def test_resource_metric(fixtures):
     metrics_client = metrics_client_factory()
-    result = metrics_client.sum_views_from_specific_ressources(fixtures['resource'].id)
+    result = metrics_client.sum_views_from_specific_model('resource', 'resource', fixtures['resource'].id)
 
     values = next(result.get_points())
     # 1 hit on permalink, 1 on url
@@ -186,7 +186,10 @@ def test_resource_metric_with_previous_data(fixtures):
 
 def test_community_resource_metric(fixtures):
     metrics_client = metrics_client_factory()
-    result = metrics_client.sum_views_from_specific_com_ressources(fixtures['community_resource'].id)
+    result = metrics_client.sum_views_from_specific_model(
+        collection='community_resource',
+        tag='communityresource',
+        model_id=fixtures['community_resource'].id)
 
     values = next(result.get_points())
     assert values['sum_nb_hits'] == 2
@@ -203,10 +206,16 @@ def test_two_datasets_one_resource_url(fixtures):
 
     metrics_client = metrics_client_factory()
 
-    result_r1 = metrics_client.sum_views_from_specific_ressources(r1.id)
+    result_r1 = metrics_client.sum_views_from_specific_model(
+        collection='resource',
+        tag='resource',
+        model_id=r1.id)
     values_r1 = next(result_r1.get_points())
 
-    result_r2 = metrics_client.sum_views_from_specific_ressources(r2.id)
+    result_r2 = metrics_client.sum_views_from_specific_model(
+        collection='resource',
+        tag='resource',
+        model_id=r2.id)
     values_r2 = next(result_r2.get_points())
 
     assert values_r1['sum_nb_hits'] == 1
