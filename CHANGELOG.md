@@ -2,7 +2,7 @@
 
 ## Current (in progress)
 
-- Nothing yet
+- Add specific query for each model metrics [#203](https://github.com/opendatateam/udata-piwik/pull/203)
 
 ## 2.1.1 (2020-05-20)
 
