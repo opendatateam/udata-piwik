@@ -2,7 +2,7 @@
 
 ## Current (in progress)
 
-- Nothing yet
+- Fix noscript img protocol [#215](https://github.com/opendatateam/udata-piwik/pull/215)
 
 ## 2.1.2 (2020-07-03)
 
