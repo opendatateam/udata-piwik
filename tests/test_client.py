@@ -1,4 +1,5 @@
 import pytest
+import requests
 
 from datetime import date, datetime
 
@@ -94,3 +95,11 @@ def test_bulk_track_is_api(ready):
     for (url, _, _) in urls:
         t = find_tracking(url, data)
         assert t is not None, 'No tracking entry found for {}'.format(url)
+
+
+def test_analyse_api_error(ready):
+    '''
+    Tests exception when API returns error.
+    '''
+    with pytest.raises(requests.HTTPError):
+        analyze('Actions.getPageUrls', period='day', date=date.today(), expanded=1, is_api=True, token_auth='ridiculous')

@@ -1,6 +1,7 @@
 import logging
 import requests
 
+
 from simplejson.errors import JSONDecodeError
 from datetime import date
 from urllib.parse import urlencode
@@ -44,8 +45,11 @@ def analyze(method, **kwargs):
     data.update(kwargs)
     timeout = current_app.config.get('PIWIK_ANALYZE_TIMEOUT',
                                      settings.PIWIK_ANALYZE_TIMEOUT)
-    r = requests.get(base_url, params=data, timeout=timeout)
-    return r.json()
+    json_result = requests.get(base_url, params=data, timeout=timeout).json()
+    if isinstance(json_result, list):
+        return json_result
+    elif json_result.get('result', None) == 'error':
+        raise requests.HTTPError(json_result.get('message', 'Analyze client\'s method failed'))
 
 
 def track(url, **kwargs):
