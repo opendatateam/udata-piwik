@@ -3,6 +3,7 @@
 ## Current (in progress)
 
 - Fix noscript img protocol [#215](https://github.com/opendatateam/udata-piwik/pull/215)
+- Add exception raise when analyze's API call fails[#230](https://github.com/opendatateam/udata-piwik/pull/230)
 
 ## 2.1.2 (2020-07-03)
 
