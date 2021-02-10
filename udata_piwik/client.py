@@ -1,7 +1,6 @@
 import logging
 import requests
 
-
 from simplejson.errors import JSONDecodeError
 from datetime import date
 from urllib.parse import urlencode
