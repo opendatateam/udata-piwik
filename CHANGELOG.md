@@ -1,5 +1,9 @@
 # Changelog
 
+## Current (in progress)
+
+- Nothing yet
+
 ## 2.1.3 (2021-05-05)
 
 - Fix noscript img protocol [#215](https://github.com/opendatateam/udata-piwik/pull/215)
