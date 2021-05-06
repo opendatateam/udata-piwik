@@ -2,7 +2,7 @@
 
 ## Current (in progress)
 
-- Pin influx docker image version to prevent usign Influx v2
+- Pin influx docker image version to prevent usign Influx v2 [#239](https://github.com/opendatateam/udata-piwik/pull/239)
 
 ## 2.1.3 (2021-05-05)
 
