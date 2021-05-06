@@ -1,5 +1,9 @@
 # Changelog
 
+## Current (in progress)
+
+- Nothing yet
+
 ## 2.1.4 (2021-05-06)
 
 - Pin influx docker image version to prevent usign Influx v2 [#239](https://github.com/opendatateam/udata-piwik/pull/239)
