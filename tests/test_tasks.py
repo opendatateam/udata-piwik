@@ -16,16 +16,8 @@ from udata_piwik.models import PiwikTracking
 
 
 PREFIX = 'https://data.somewhere.com'
-GOAL_NEW_DATASET = 1
-GOAL_NEW_REUSE = 2
-GOAL_NEW_FOLLOW = 3
 
-pytestmark = pytest.mark.options(plugins=['piwik'],
-                                 piwik_goals={
-                                     'NEW_DATASET': GOAL_NEW_DATASET,
-                                     'NEW_REUSE': GOAL_NEW_REUSE,
-                                     'NEW_FOLLOW': GOAL_NEW_FOLLOW,
-                                 })
+pytestmark = pytest.mark.options(plugins=['piwik'])
 
 
 @pytest.fixture
