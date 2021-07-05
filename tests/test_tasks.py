@@ -143,4 +143,4 @@ def test_piwik_track_new_follow(track, app):
     with app.test_request_context(path, base_url=PREFIX):
         tracking.send_signal(on_new_follow, request, user)
 
-    track.assert_called_with(PREFIX + path, uid=user.id, user_ip=None, idgoal=GOAL_NEW_FOLLOW)
+    track.assert_called_with(PREFIX + path, uid=user.id, user_ip=None)
