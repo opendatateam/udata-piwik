@@ -2,7 +2,8 @@ import pytest
 
 from datetime import date, datetime, timedelta
 
-from udata import frontend, settings
+from udata import settings
+from udata_gouvfr import frontend
 from udata.app import create_app
 from udata.core.dataset.factories import (
     DatasetFactory, ResourceFactory, CommunityResourceFactory
@@ -24,16 +25,12 @@ from .conftest import PiwikSettings
 from .client import visit, has_data, reset, download
 
 
-MODULES = ['core.dataset', 'core.organization', 'core.user', 'core.reuse',
-           'core.post']
-
-
 @pytest.fixture(scope='module')  # noqa
 def app(request):
     app = create_app(settings.Defaults, override=PiwikSettings)
     with app.app_context():
         drop_db(app)
-    frontend.init_app(app, MODULES)
+    frontend.init_app(app)
     with app.app_context():
         yield app
         drop_db(app)

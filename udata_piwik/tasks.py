@@ -78,11 +78,6 @@ def piwik_bulk_track_api(self, max_urls):
 def piwik_track_dataset_published(url, **params):
     '''Track a dataset publication into Piwik.'''
     log.debug('Sending to piwik: {url}'.format(url=url))
-    goals = current_app.config.get('PIWIK_GOALS')
-    if goals:
-        params.update({
-            'idgoal': goals['NEW_DATASET'],
-        })
     track(url, **params)
 
 
@@ -90,11 +85,6 @@ def piwik_track_dataset_published(url, **params):
 def piwik_track_reuse_published(url, **params):
     '''Track a reuse publication into Piwik.'''
     log.debug('Sending to piwik: {url}'.format(url=url))
-    goals = current_app.config.get('PIWIK_GOALS')
-    if goals:
-        params.update({
-            'idgoal': goals['NEW_REUSE'],
-        })
     track(url, **params)
 
 
@@ -102,9 +92,4 @@ def piwik_track_reuse_published(url, **params):
 def piwik_track_new_follow(url, **params):
     '''Track a new follow into Piwik.'''
     log.debug('Sending to piwik: {url}'.format(url=url))
-    goals = current_app.config.get('PIWIK_GOALS')
-    if goals:
-        params.update({
-            'idgoal': goals['NEW_FOLLOW'],
-        })
     track(url, **params)

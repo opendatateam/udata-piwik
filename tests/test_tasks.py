@@ -16,16 +16,8 @@ from udata_piwik.models import PiwikTracking
 
 
 PREFIX = 'https://data.somewhere.com'
-GOAL_NEW_DATASET = 1
-GOAL_NEW_REUSE = 2
-GOAL_NEW_FOLLOW = 3
 
-pytestmark = pytest.mark.options(plugins=['piwik'],
-                                 piwik_goals={
-                                     'NEW_DATASET': GOAL_NEW_DATASET,
-                                     'NEW_REUSE': GOAL_NEW_REUSE,
-                                     'NEW_FOLLOW': GOAL_NEW_FOLLOW,
-                                 })
+pytestmark = pytest.mark.options(plugins=['piwik'])
 
 
 @pytest.fixture
@@ -151,4 +143,4 @@ def test_piwik_track_new_follow(track, app):
     with app.test_request_context(path, base_url=PREFIX):
         tracking.send_signal(on_new_follow, request, user)
 
-    track.assert_called_with(PREFIX + path, uid=user.id, user_ip=None, idgoal=GOAL_NEW_FOLLOW)
+    track.assert_called_with(PREFIX + path, uid=user.id, user_ip=None)

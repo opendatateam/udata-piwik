@@ -24,7 +24,7 @@
   {% endif %}
 
   {# We only enable search tracking on search pages with queries #}
-  {% if request.endpoint in ('search.index', 'datasets.list') and request.args.q%}
+  {% if request.endpoint == 'datasets.list' and request.args.q%}
   {# Global search is considered as datasets search #}
   _paq.push(['trackSiteSearch', '{{ request.args.q }}', 'datasets', {{ datasets.total|default(0) }}]);
   {% elif request.endpoint == 'reuses.list' and request.args.q %}
@@ -33,24 +33,6 @@
   _paq.push(['trackSiteSearch', '{{ request.args.q }}', 'organizations', {{ organizations.total|default(0) }}]);
   {% else %}
   _paq.push(['trackPageView']);
-  {% endif %}
-
-  {% if config.PIWIK_GOALS %}
-  var PIWIK_GOALS = {{config.PIWIK_GOALS|to_json|safe}};
-  // Wait for uData object to be present
-  window.addEventListener("load", function() {
-    var _loop = function _loop() {
-      var value = PIWIK_GOALS[goal];
-      var pub_fn = function pub_fn() {
-        uData.log.debug('Tracking goal', goal, 'with value', value);
-        _paq.push(['trackGoal', value]);
-      };
-      uData.pubsub.subscribe(goal, pub_fn);
-    };
-    for (var goal in PIWIK_GOALS) {
-      _loop();
-    }
-  }, false);
   {% endif %}
 
 
