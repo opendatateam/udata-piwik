@@ -24,7 +24,7 @@
   {% endif %}
 
   {# We only enable search tracking on search pages with queries #}
-  {% if request.endpoint in ('search.index', 'datasets.list') and request.args.q%}
+  {% if request.endpoint == 'datasets.list' and request.args.q%}
   {# Global search is considered as datasets search #}
   _paq.push(['trackSiteSearch', '{{ request.args.q }}', 'datasets', {{ datasets.total|default(0) }}]);
   {% elif request.endpoint == 'reuses.list' and request.args.q %}
