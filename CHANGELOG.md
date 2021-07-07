@@ -1,6 +1,6 @@
 # Changelog
 
-## Current (in progress)
+## 3.0.0 (2021-07-07)
 
 - Ensure compatibility with udata-front and removed goals mechanism [#245](https://github.com/opendatateam/udata-piwik/pull/245)
 
