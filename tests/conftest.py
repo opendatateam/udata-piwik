@@ -16,5 +16,5 @@ class PiwikSettings(Testing):
         'password': 'piwik',
         'database': 'piwik_db'
     }
-    # FIXME: this should be taken care of in udata-gouvfr
+    # FIXME: this should be taken care of in udata-front
     RESOURCES_SCHEMAGOUVFR_ENABLED = False

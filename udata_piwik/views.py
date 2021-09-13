@@ -1,6 +1,6 @@
 from flask import render_template, Blueprint
 
-from udata_gouvfr.frontend import template_hook
+from udata_front.frontend import template_hook
 
 blueprint = Blueprint('piwik', __name__, template_folder='templates')
 
