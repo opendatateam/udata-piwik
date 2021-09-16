@@ -2,7 +2,7 @@
 
 ## Current (in progress)
 
-- Nothing yet
+- Change udata-gouvfr dependency to udata-front following renaming [#249](https://github.com/opendatateam/udata-piwik/pull/249)
 
 ## 3.0.0 (2021-07-07)
 

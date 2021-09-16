@@ -3,7 +3,7 @@ import pytest
 from datetime import date, datetime, timedelta
 
 from udata import settings
-from udata_gouvfr import frontend
+from udata_front import frontend
 from udata.app import create_app
 from udata.core.dataset.factories import (
     DatasetFactory, ResourceFactory, CommunityResourceFactory
