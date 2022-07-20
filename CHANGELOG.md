@@ -2,7 +2,7 @@
 
 ## Current (in progress)
 
-- Nothing yet
+- Replace mongo legacy image in CI [#266](https://github.com/opendatateam/udata-piwik/pull/266)
 
 ## 3.1.0 (2021-09-16)
 
