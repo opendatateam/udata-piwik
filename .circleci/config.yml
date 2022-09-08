@@ -8,25 +8,11 @@ jobs:
       - image: mongo:3.6
       - image: redis:alpine
       - image: udata/elasticsearch:2.4.5
-      - image: influxdb:1.8-alpine
-        environment:
-          INFLUXDB_DB: piwik_db
-          INFLUXDB_USER: piwik
-          INFLUXDB_USER_PASSWORD: piwik
-      - image: udata/piwik-test
-        environment:
-          MYSQL_ROOT_PASSWORD: piwik
-          MYSQL_DATABASE: piwik
-          MYSQL_USER: piwik
-          MYSQL_PASSWORD: piwik
     environment:
       BASH_ENV: /root/.bashrc
       PIWIK_URL: localhost
     steps:
       - checkout
-      - run:
-          name: Wait for piwik
-          command: dockerize -wait tcp://localhost:80 -timeout 2m
       - run:
           name: Compute Python dependencies key
           command: cat requirements/*.pip > python.deps

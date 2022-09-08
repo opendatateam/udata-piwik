@@ -5,40 +5,19 @@ from datetime import date, datetime
 
 from udata.utils import faker
 
-from udata_piwik.client import bulk_track, analyze, track
+from udata_piwik.client import bulk_track, track
 
 from .conftest import PiwikSettings
-from .client import has_data, reset
 
 
 pytestmark = pytest.mark.settings.with_args(PiwikSettings)
 
 
-@pytest.fixture()
-def reset_piwik():
-    reset()
-
-
-@pytest.fixture()
-def ready(app, reset_piwik):
-    # wait for Piwik to be populated
-    assert has_data()
-
-
-def find_tracking(url, data):
-    for entry in data:
-        if entry.get('url') == url:
-            return entry
-        elif 'subtable' in entry:
-            found = find_tracking(url, entry['subtable'])
-            if found:
-                return found
-
-
-def test_track(ready):
+def test_track():
     '''
     Use bulk_track w/ default params which should log to PIWIK_ID_FRONT
     '''
+    assert False, "TODO: mock HTTP request instead of spinning up a Matomo"
     url = 'http://local.test/' + faker.uri_path()
 
     track(url)
@@ -48,10 +27,11 @@ def test_track(ready):
     assert t is not None, 'No tracking entry found for {}'.format(url)
 
 
-def test_track_is_api(ready):
+def test_track_is_api():
     '''
     Use bulk_track w/ is_api=True which should log to PIWIK_ID_API
     '''
+    assert False, "TODO: mock HTTP request instead of spinning up a Matomo"
     url = 'http://local.test/' + faker.uri_path()
 
     track(url, is_api=True)
@@ -61,10 +41,11 @@ def test_track_is_api(ready):
     assert t is not None, 'No tracking entry found for {}'.format(url)
 
 
-def test_bulk_track_not_is_api(ready):
+def test_bulk_track_not_is_api():
     '''
     Use bulk_track w/ is_api=False which should log to PIWIK_ID_FRONT
     '''
+    assert False, "TODO: mock HTTP request instead of spinning up a Matomo"
     urls = [('http://local.test/' + faker.uri_path(), datetime.now(), {}) for _ in range(3)]
     urls.append(('https://local.test/utf8-éèü', datetime.now(), {}))
 
@@ -79,10 +60,11 @@ def test_bulk_track_not_is_api(ready):
         assert t is not None, 'No tracking entry found for {}'.format(url)
 
 
-def test_bulk_track_is_api(ready):
+def test_bulk_track_is_api():
     '''
     Use bulk_track w/ default params which should log to PIWIK_ID_API
     '''
+    assert False, "TODO: mock HTTP request instead of spinning up a Matomo"
     urls = [('http://local.test/' + faker.uri_path(), datetime.now(), {}) for _ in range(3)]
     urls.append(('https://local.test/utf8-éèü', datetime.now(), {}))
 
@@ -97,9 +79,10 @@ def test_bulk_track_is_api(ready):
         assert t is not None, 'No tracking entry found for {}'.format(url)
 
 
-def test_analyse_api_error(ready):
+def test_analyse_api_error():
     '''
     Tests exception when API returns error.
     '''
+    assert False, "TODO: mock HTTP request instead of spinning up a Matomo"
     with pytest.raises(requests.HTTPError):
         analyze('Actions.getPageUrls', period='day', date=date.today(), expanded=1, is_api=True, token_auth='ridiculous')

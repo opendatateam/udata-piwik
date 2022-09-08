@@ -1,7 +1,5 @@
 import pytest
 
-from datetime import date, timedelta
-
 from flask import request
 
 from udata import tracking
@@ -21,12 +19,6 @@ pytestmark = pytest.mark.options(plugins=['piwik'])
 
 
 @pytest.fixture
-def counter(mocker):
-    # Mock counter to speedup test as it is already tested elsewhere
-    return mocker.patch('udata_piwik.tasks.counter')
-
-
-@pytest.fixture
 def track(mocker):
     # Mock track to speedup test as it is already tested elsewhere
     return mocker.patch('udata_piwik.tasks.track')
@@ -36,17 +28,6 @@ def track(mocker):
 def bulk_track(mocker):
     # Mock track to speedup test as it is already tested elsewhere
     return mocker.patch('udata_piwik.tasks.bulk_track')
-
-
-def test_piwik_current_metrics(app, counter):
-    tasks.piwik_current_metrics()
-    counter.count_for.assert_called_with(date.today())
-
-
-def test_piwik_yesterday_metrics(app, counter):
-    yesterday = date.today() - timedelta(days=1)
-    tasks.piwik_yesterday_metrics()
-    counter.count_for.assert_called_with(yesterday)
 
 
 @pytest.mark.options(PIWIK_BULK=False)

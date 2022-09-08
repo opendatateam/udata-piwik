@@ -40,8 +40,8 @@ tests_require = pip('test.pip')
 
 setup(
     name='udata-piwik',
-    version='3.1.1.dev',
-    description='Piwik support for uData',
+    version='4.0.0.dev',
+    description='Piwik/Matomo support for uData',
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/opendatateam/udata-piwik',
@@ -56,9 +56,6 @@ setup(
         'test': tests_require,
     },
     entry_points={
-        'udata.commands': [
-            'piwik = udata_piwik.commands:piwik',
-        ],
         'udata.models': [
             'piwik = udata_piwik.models',
         ],
