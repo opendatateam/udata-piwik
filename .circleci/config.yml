@@ -10,7 +10,6 @@ jobs:
       - image: udata/elasticsearch:2.4.5
     environment:
       BASH_ENV: /root/.bashrc
-      PIWIK_URL: localhost
     steps:
       - checkout
       - run:
