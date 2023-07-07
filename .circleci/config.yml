@@ -45,6 +45,7 @@ jobs:
             source venv/bin/activate
             # Workaround to bad transitive dependencies resolution:
             # Install package first then all other dependencies
+            pip install --force-reinstall setuptools==66.1.1
             pip install -e . || pip install -e .
             pip install -r requirements/develop.pip || pip install -r requirements/develop.pip
       - save_cache:
