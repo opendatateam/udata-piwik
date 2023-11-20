@@ -1,6 +1,6 @@
 # Changelog
 
-## Current (in progress)
+## 4.0.0 (2023-11-20)
 
 - [BREAKING] Remove metrics computation with Matomo as a source (cf below) [#273](https://github.com/opendatateam/udata-piwik/pull/273)
 - Replace mongo legacy image in CI [#266](https://github.com/opendatateam/udata-piwik/pull/266)
