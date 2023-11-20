@@ -1,105 +1,67 @@
-import pytest
-import requests
+import urllib
 
-from datetime import date, datetime
+from datetime import datetime
+
+import pytest
 
 from udata.utils import faker
-
-from udata_piwik.client import bulk_track, analyze, track
+from udata_piwik.client import bulk_track, track
 
 from .conftest import PiwikSettings
-from .client import has_data, reset
-
 
 pytestmark = pytest.mark.settings.with_args(PiwikSettings)
 
-
-@pytest.fixture()
-def reset_piwik():
-    reset()
+PIWIK_TRACK_URL = f'{PiwikSettings.PIWIK_SCHEME}://{PiwikSettings.PIWIK_URL}/piwik.php'
 
 
-@pytest.fixture()
-def ready(app, reset_piwik):
-    # wait for Piwik to be populated
-    assert has_data()
-
-
-def find_tracking(url, data):
-    for entry in data:
-        if entry.get('url') == url:
-            return entry
-        elif 'subtable' in entry:
-            found = find_tracking(url, entry['subtable'])
-            if found:
-                return found
-
-
-def test_track(ready):
+def test_track(app, rmock):
     '''
     Use bulk_track w/ default params which should log to PIWIK_ID_FRONT
     '''
+    rmock.post(PIWIK_TRACK_URL)
     url = 'http://local.test/' + faker.uri_path()
-
     track(url)
+    assert urllib.parse.quote(url, safe='') in rmock.last_request.text
+    assert PiwikSettings.PIWIK_AUTH in rmock.last_request.text
+    assert f"idsite={PiwikSettings.PIWIK_ID_FRONT}" in rmock.last_request.text
 
-    data = analyze('Actions.getPageUrls', period='day', date=date.today(), expanded=1)
-    t = find_tracking(url, data)
-    assert t is not None, 'No tracking entry found for {}'.format(url)
 
-
-def test_track_is_api(ready):
+def test_track_is_api(app, rmock):
     '''
     Use bulk_track w/ is_api=True which should log to PIWIK_ID_API
     '''
+    rmock.post(PIWIK_TRACK_URL)
     url = 'http://local.test/' + faker.uri_path()
-
     track(url, is_api=True)
-
-    data = analyze('Actions.getPageUrls', period='day', date=date.today(), expanded=1, is_api=True)
-    t = find_tracking(url, data)
-    assert t is not None, 'No tracking entry found for {}'.format(url)
+    assert f"idsite={PiwikSettings.PIWIK_ID_API}" in rmock.last_request.text
 
 
-def test_bulk_track_not_is_api(ready):
+def test_bulk_track_not_is_api(app, rmock):
     '''
     Use bulk_track w/ is_api=False which should log to PIWIK_ID_FRONT
     '''
+    rmock.post(PIWIK_TRACK_URL)
     urls = [('http://local.test/' + faker.uri_path(), datetime.now(), {}) for _ in range(3)]
     urls.append(('https://local.test/utf8-éèü', datetime.now(), {}))
 
-    response = bulk_track(*urls, is_api=False)
+    bulk_track(*urls, is_api=False)
 
-    assert response['status'] == 'success'
-    assert response['tracked'] == len(urls)
+    assert PiwikSettings.PIWIK_AUTH in rmock.last_request.text
+    assert f"idsite={PiwikSettings.PIWIK_ID_FRONT}" in rmock.last_request.text
 
-    data = analyze('Actions.getPageUrls', period='day', date=date.today(), expanded=1)
-    for (url, _, _) in urls:
-        t = find_tracking(url, data)
-        assert t is not None, 'No tracking entry found for {}'.format(url)
+    for url, _date, _ in urls:
+        assert urllib.parse.quote(url, safe='') in rmock.last_request.text
+        assert _date.strftime('%s') in rmock.last_request.text
 
 
-def test_bulk_track_is_api(ready):
+def test_bulk_track_is_api(app, rmock):
     '''
     Use bulk_track w/ default params which should log to PIWIK_ID_API
     '''
+    rmock.post(PIWIK_TRACK_URL)
     urls = [('http://local.test/' + faker.uri_path(), datetime.now(), {}) for _ in range(3)]
     urls.append(('https://local.test/utf8-éèü', datetime.now(), {}))
 
-    response = bulk_track(*urls)
+    bulk_track(*urls)
 
-    assert response['status'] == 'success'
-    assert response['tracked'] == len(urls)
-
-    data = analyze('Actions.getPageUrls', period='day', date=date.today(), expanded=1, is_api=True)
-    for (url, _, _) in urls:
-        t = find_tracking(url, data)
-        assert t is not None, 'No tracking entry found for {}'.format(url)
-
-
-def test_analyse_api_error(ready):
-    '''
-    Tests exception when API returns error.
-    '''
-    with pytest.raises(requests.HTTPError):
-        analyze('Actions.getPageUrls', period='day', date=date.today(), expanded=1, is_api=True, token_auth='ridiculous')
+    assert f"idsite={PiwikSettings.PIWIK_ID_API}" in rmock.last_request.text

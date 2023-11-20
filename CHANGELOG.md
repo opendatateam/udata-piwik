@@ -2,8 +2,23 @@
 
 ## Current (in progress)
 
+- [BREAKING] Remove metrics computation with Matomo as a source (cf below) [#273](https://github.com/opendatateam/udata-piwik/pull/273)
 - Replace mongo legacy image in CI [#266](https://github.com/opendatateam/udata-piwik/pull/266)
 - Upgrade test and develop deps [#284](https://github.com/opendatateam/udata-piwik/pull/284)
+
+Up until this version, metrics were tentatively computed from Matomo for pretty much every object of a udata instance. We found this method to be pretty inaccurate, since Matomo limits the number of records stored to roughly the most visited 1000 for a given "namespace". There's a way around that by using the data from the Live module of Matomo but it's not enabled on our instance for privacy reasons. We also needed to count hits that Matomo could not know of: resources (files) downloads made directly on our server.
+
+Thus, this module now only does three things:
+- inject the Matomo tracking code in the templates
+- process events for tracking the API usage in Matomo
+- process events for tracking some Matomo goals
+
+Metrics computation is now handled by [https://github.com/opendatateam/udata-metrics](udata-metrics) and does not use Matomo as a source.
+
+:warning: Jobs to be unscheduled:
+- `piwik-update-metrics`
+- `piwik-current-metrics`
+- `piwik-yesterday-metrics`
 
 ## 3.1.0 (2021-09-16)
 
