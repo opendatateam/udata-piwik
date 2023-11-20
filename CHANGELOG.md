@@ -1,5 +1,9 @@
 # Changelog
 
+## Current (in progress)
+
+- Nothing yet
+
 ## 4.0.0 (2023-11-20)
 
 - [BREAKING] Remove metrics computation with Matomo as a source (cf below) [#273](https://github.com/opendatateam/udata-piwik/pull/273)
