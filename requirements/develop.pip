@@ -1,5 +1,5 @@
 -e .[test]
 flake8==3.7.8
-invoke==1.7.3
+invoke==2.2.0
 pytest-cov==4.0.0
 twine==3.3.0
