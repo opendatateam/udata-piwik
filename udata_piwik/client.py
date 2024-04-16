@@ -1,7 +1,10 @@
 import logging
 import requests
 
-from simplejson.errors import JSONDecodeError
+try:
+    from simplejson.errors import JSONDecodeError
+except ImportError:
+    from json.decoder import JSONDecodeError
 from urllib.parse import urlencode
 
 from flask import current_app
