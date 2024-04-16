@@ -1,6 +1,7 @@
 import logging
 import requests
 
+from json.decoder import JSONDecodeError
 from urllib.parse import urlencode
 
 from flask import current_app
@@ -77,5 +78,5 @@ def bulk_track(*uris, **kwargs):
     try:
         return resp.json()
     # sometimes we don't have a JSON response from Matomo (eg QueuedTracking)
-    except requests.exceptions.JSONDecodeError:
+    except JSONDecodeError:
         return {}
