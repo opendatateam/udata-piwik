@@ -2,7 +2,7 @@
 
 ## Current (in progress)
 
-- Nothing yet
+- Do not import simplejson [#287](https://github.com/opendatateam/udata-piwik/pull/287)
 
 ## 4.0.0 (2023-11-20)
 
