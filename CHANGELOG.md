@@ -1,5 +1,9 @@
 # Changelog
 
+## Current (in progress)
+
+- Nothing yet
+
 ## 4.1.0 (2024-04-23)
 
 - Do not import simplejson [#287](https://github.com/opendatateam/udata-piwik/pull/287)
