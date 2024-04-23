@@ -1,6 +1,6 @@
 # Changelog
 
-## Current (in progress)
+## 4.1.0 (2024-04-23)
 
 - Do not import simplejson [#287](https://github.com/opendatateam/udata-piwik/pull/287)
 - Migrate to Python 3.11 following `udata` dependencies upgrade [#286](https://github.com/opendatateam/udata-piwik/pull/286)
