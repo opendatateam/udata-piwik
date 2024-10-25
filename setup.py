@@ -40,7 +40,7 @@ tests_require = pip('test.pip')
 
 setup(
     name='udata-piwik',
-    version='4.1.1',
+    version='4.1.2.dev',
     description='Piwik/Matomo support for uData',
     long_description=long_description,
     long_description_content_type='text/markdown',
