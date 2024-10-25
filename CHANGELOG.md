@@ -2,7 +2,7 @@
 
 ## Current (in progress)
 
-- Nothing yet
+- Eliminate explicit `udata-front` dependency [#288](https://github.com/opendatateam/udata-piwik/pull/288)
 
 ## 4.1.1 (2024-10-25)
 
