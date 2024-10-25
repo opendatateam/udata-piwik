@@ -2,7 +2,7 @@
 
 ## Current (in progress)
 
-- Nothing yet
+- Remove protocol URL in template when enabling tracking (scheme is now provided by `PIWIK_SCHEME`) [#289](https://github.com/opendatateam/udata-piwik/pull/289)
 
 ## 4.1.0 (2024-04-23)
 
